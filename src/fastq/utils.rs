@@ -15,11 +15,6 @@ lazy_static! {
 }
 
 #[inline]
-/// It is probably not ideal to return a usize
-/// since this will cause rounding. A better
-/// approach would be to return a rounded i8
-/// (max value 256 so we are safe). However,
-/// This probably required more computation power.
 pub fn error_to_phred(error: f64) -> u8 {
     return (-10_f64 * error.log10()) as u8;
 }
