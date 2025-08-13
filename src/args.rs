@@ -65,4 +65,11 @@ pub enum SubCommand {
         #[clap(short, long)]
         outfile: Option<PathBuf>,
     },
+    Fq2Fa {
+        #[clap(short, long)]
+        fastq: PathBuf,
+
+        #[clap(short, long)]
+        outfile: Option<PathBuf>,
+    },
 }

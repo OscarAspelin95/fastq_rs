@@ -16,7 +16,6 @@ Run with:<br>
 `fastq_rs <subcommand> <args>`<br>
 
 ## ToDo
-- [ ] Automatically extract sample name.
 - [ ] Improve error handling and add more error types.
 
 ## Subcommands
@@ -57,20 +56,20 @@ Optional arguments:
 <b>-o/--outfile</b> [stdout] - Output file.
 </pre>
 
-### fastq_rs `fq2fa`
-🔴 Convert FASTQ to FASTA.
+### fastq_rs `fq2-fa`
+🟡 Convert FASTQ to FASTA.
 
-`fastq_rs fq2fa --fastq <reads.fastq.gz> <optional_args>`
+`fastq_rs fq2-fa --fastq <reads.fastq.gz> <optional_args>`
 
 Optional arguments:
 <pre>
 <b>-o/--outfile</b> [stdout] - Output file.
 </pre>
 
-### fastq_rs `fq2tab`
+### fastq_rs `fq2-tab`
 🔴 Convert FASTQ to a .tsv file with information about each read.
 
-`fastq_rs fq2tab --fastq <reads.fastq.gz> <optional_args>`
+`fastq_rs fq2-tab --fastq <reads.fastq.gz> <optional_args>`
 
 Optional arguments:
 <pre>
@@ -106,7 +105,9 @@ Optional arguments:
 
 <b>--max-error</b> [0.05] - Maximum allowed error in window. Higher error windows will be trimmed.
 
-<b>--barcodes</b> [none] - 5'-3' barcodes to trim at the start/end of reads.
+<b>--barcodes-forward</b> [none] - 5'-3' barcodes to trim at the start of reads.
+
+<b>--barcodes-reverse</b> [none] - 5'-3' barcodes to trim at the end of reads.
 
 <b>--barcode-mismatches</b> [2] - Allow this number of mismatches between barcode and read.
 

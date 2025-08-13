@@ -48,6 +48,7 @@ pub fn bio_fastq_reader(
 
     Ok(Reader::new(reader))
 }
+
 /// With the "compression feature, needletail detects gzip automatically."
 pub fn needletail_fastq_reader(fastq: &PathBuf) -> Result<Box<dyn FastxReader>, AppError> {
     let (fastq_file, _) = validate_fastq(&fastq).map_err(|_| AppError::FastqError)?;
