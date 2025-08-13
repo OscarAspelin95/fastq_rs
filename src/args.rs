@@ -1,5 +1,13 @@
-use clap::{Args, Parser, Subcommand};
+use clap::{Args, Parser, Subcommand, ValueEnum};
 use std::path::PathBuf;
+
+#[derive(Debug, Clone, ValueEnum)]
+pub enum SortType {
+    Length,
+    Gc,
+    MeanError,
+    Minimizer,
+}
 
 #[derive(Debug, Parser)]
 pub struct App {
@@ -28,6 +36,31 @@ pub enum SubCommand {
     Stats {
         #[clap(short, long)]
         fastq: PathBuf,
+
+        #[clap(short, long)]
+        outfile: Option<PathBuf>,
+    },
+    Sort {
+        #[clap(short, long)]
+        fastq: PathBuf,
+
+        #[clap(value_enum, short, long, default_value_t = SortType::Length)]
+        by: SortType,
+
+        #[clap(short, long, default_value_t = false)]
+        reverse: bool,
+
+        #[clap(short, long, default_value_t = 10)]
+        window_size: usize,
+
+        #[clap(short, long, default_value_t = 15)]
+        kmer_size: usize,
+
+        #[clap(long, default_value_t = 0.05)]
+        max_read_error: f64,
+
+        #[clap(long, default_value_t = 0.05)]
+        max_minimizer_error: f64,
 
         #[clap(short, long)]
         outfile: Option<PathBuf>,
