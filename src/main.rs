@@ -1,28 +1,21 @@
 use clap::Parser;
 use log::info;
 use simple_logger::SimpleLogger;
-use std::path::PathBuf;
 
-mod fastq;
-use fastq::parser::fastq_parser;
+mod common;
+mod stats;
 
-#[derive(Parser, Debug)]
-#[command(version = "0.0.1", long_about = "Blazing fast fastq stats.")]
-struct Args {
-    #[arg(short, long)]
-    fastq: PathBuf,
+mod args;
+use crate::args::App;
 
-    #[arg(short, long)]
-    outfile: PathBuf,
-}
+mod dispatch;
+use dispatch::dispatch;
 
 fn main() {
     SimpleLogger::new().init().unwrap();
 
     info!("Running main.rs");
-    let args: Args = Args::parse();
+    let args: App = App::parse();
 
-    // Extract stats for each read.
-    info!("Parsing fastq...");
-    fastq_parser(&args.fastq, &args.outfile);
+    dispatch(args);
 }
