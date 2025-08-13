@@ -35,26 +35,26 @@ Optional arguments:
 </pre>
 
 ### fastq_rs `sort`
-🟢 Sort reads based on provided metric.
+🟡 Sort reads based on provided metric.
 
 `fastq_rs sort --fastq <reads.fastq.gz> <optional_args>`
 
 Optional arguments:
 <pre>
 
-<b>-b/--by</b> [length] - {length, mean_error, minimizers}
+<b>-b/--by</b> [length] - {length, gc_content, mean_error, minimizers}
 
 <b>-r/--reverse</b> [false] - Sort in descending order.
 
-<b>-w/--window-size</b> - Find a minimizer from this many consecutive kmers.
+<b>-w/--window-size</b> [10] - Minimizer window size (number of consecutive kmers).
 
-<b>-k/--kmer-size</b> - Kmer size to use.
+<b>-k/--kmer-size</b> [15] - Minimizer kmer size.
 
-<b>--max-read-error</b> - Reads with a mean error larger than this will be assigned zero valid minimizers.
+<b>--max-read-error</b> [0.05] - Minimizer max allowed read error. Reads with higher error rates will generate zero valid minimizers.
 
-<b>--max-minimizer-error</b> [0.05] - If sorting by minimizers, keep only minimizers that have at most this probability of being incorrect.
+<b>--max-minimizer-error</b> [0.05] - Minimizer error probability cutoff.
 
-<b>-o/--outfile</b> [sorted.fastq.gz] - Output file.
+<b>-o/--outfile</b> [stdout] - Output file.
 </pre>
 
 ### fastq_rs `fq2fa`
@@ -64,7 +64,7 @@ Optional arguments:
 
 Optional arguments:
 <pre>
-<b>-o/--outfile</b> [reads.fasta] - Output file.
+<b>-o/--outfile</b> [stdout] - Output file.
 </pre>
 
 ### fastq_rs `fq2tab`
@@ -74,7 +74,7 @@ Optional arguments:
 
 Optional arguments:
 <pre>
-<b>-o/--outfile</b> [reads.tsv] - Output file.
+<b>-o/--outfile</b> [stdout] - Output file.
 </pre>
 
 ### fastq_rs `filter`
@@ -92,5 +92,25 @@ Optional arguments:
 
 <b>--max-err</b> [1.0] - Maximum allowed mean read error.
 
-<b>-o/--outfile</b> [filtered.fastq.gz] - Output file.
+<b>-o/--outfile</b> [stdout] - Output file.
+</pre>
+
+### fastq_rs `trim`
+🔴 Trim reads.
+
+`fastq_rs trim --fastq <reads.fastq.gz> <optional_args>`
+
+Optional arguments:
+<pre>
+<b>-w/--window-size</b> [10] - Sliding window to check and trim.
+
+<b>--max-error</b> [0.05] - Maximum allowed error in window. Higher error windows will be trimmed.
+
+<b>--barcodes</b> [none] - 5'-3' barcodes to trim at the start/end of reads.
+
+<b>--barcode-mismatches</b> [2] - Allow this number of mismatches between barcode and read.
+
+<b>--barcode-margin</b> [10] - Allow barcode to match within this distance from the start/end of read.
+
+<b>-o/--outfile</b> [stdout] - Output file.
 </pre>
