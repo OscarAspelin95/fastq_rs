@@ -3,6 +3,7 @@ use simple_logger::SimpleLogger;
 
 mod args;
 mod common;
+mod fq2fa;
 mod sort;
 
 mod stats;

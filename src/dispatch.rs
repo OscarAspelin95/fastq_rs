@@ -1,4 +1,5 @@
 use crate::args::{App, SubCommand};
+use crate::fq2fa::fastq_fq2fa;
 use crate::sort::fastq_sort;
 use crate::stats::fastq_stats;
 
@@ -25,5 +26,6 @@ pub fn dispatch(args: App) {
             outfile,
         )
         .unwrap(),
+        SubCommand::Fq2Fa { fastq, outfile } => fastq_fq2fa(&fastq, outfile).unwrap(),
     }
 }

@@ -8,4 +8,4 @@ pub mod writer;
 pub use writer::{bio_fastq_writer, general_bufwriter, write_json};
 
 pub mod reader;
-pub use reader::bio_fastq_reader;
+pub use reader::{bio_fastq_reader, needletail_fastq_reader};
