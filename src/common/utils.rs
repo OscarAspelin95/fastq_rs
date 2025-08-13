@@ -20,9 +20,15 @@ pub fn error_to_phred(error: f64) -> u8 {
 }
 
 #[inline]
-pub fn mean_error_and_phred(mean_errors: &[f64]) -> (f64, u8) {
-    let error_sum: f64 = mean_errors.iter().sum();
-    let error_mean = error_sum / mean_errors.len() as f64;
+pub fn mean_error_and_phred(qual: &[u8]) -> (f64, u8) {
+    let error_sum: f64 = qual
+        .iter()
+        .map(|phred| {
+            return PHRED_TO_ERROR[*phred as usize];
+        })
+        .sum::<f64>();
+
+    let error_mean = error_sum / qual.len() as f64;
     return (error_mean, error_to_phred(error_mean));
 }
 

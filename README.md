@@ -34,6 +34,29 @@ Optional arguments:
 <b>-o/--outfile</b> [stats.json] - Output file.
 </pre>
 
+### fastq_rs `sort`
+🟢 Sort reads based on provided metric.
+
+`fastq_rs sort --fastq <reads.fastq.gz> <optional_args>`
+
+Optional arguments:
+<pre>
+
+<b>-b/--by</b> [length] - {length, mean_error, minimizers}
+
+<b>-r/--reverse</b> [false] - Sort in descending order.
+
+<b>-w/--window-size</b> - Find a minimizer from this many consecutive kmers.
+
+<b>-k/--kmer-size</b> - Kmer size to use.
+
+<b>--max-read-error</b> - Reads with a mean error larger than this will be assigned zero valid minimizers.
+
+<b>--max-minimizer-error</b> [0.05] - If sorting by minimizers, keep only minimizers that have at most this probability of being incorrect.
+
+<b>-o/--outfile</b> [sorted.fastq.gz] - Output file.
+</pre>
+
 ### fastq_rs `fq2fa`
 🔴 Convert FASTQ to FASTA.
 

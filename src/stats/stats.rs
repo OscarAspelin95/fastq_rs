@@ -1,4 +1,5 @@
-use crate::common::{PHRED_TO_ERROR, bio_fastq_reader, mean_error_and_phred, mean_len, write_json};
+use crate::common::utils::error_to_phred;
+use crate::common::{bio_fastq_reader, mean_error_and_phred, mean_len, write_json};
 
 use crate::common::AppError;
 
@@ -41,14 +42,8 @@ pub fn fastq_stats(fastq: &PathBuf, outfile: Option<PathBuf>) -> Result<(), AppE
 
         let record_len: usize = record.seq().len();
 
-        let error_sum: f64 = record
-            .qual()
-            .iter()
-            .map(|phred| {
-                return PHRED_TO_ERROR[*phred as usize];
-            })
-            .sum();
-        let mean_error = error_sum / record_len as f64;
+        // Read error.
+        let (mean_error, _) = mean_error_and_phred(&record.qual());
 
         num_reads.fetch_add(1, Relaxed);
         num_bases.fetch_add(record_len, Relaxed);
@@ -58,9 +53,12 @@ pub fn fastq_stats(fastq: &PathBuf, outfile: Option<PathBuf>) -> Result<(), AppE
         read_lengths.lock().unwrap().push(record_len);
     });
 
-    // Mean phred.
+    // NOTE that for performance reasons, we calculate the mean of the mean read error rates.
+    // To get the true mean error, we'd have to store every single nucleotide error rate, sum
+    // them up and divide by the total number of bases (unfeasible for large files).
     let mean_errors = Arc::try_unwrap(mean_errors).unwrap().into_inner().unwrap();
-    let (mean_mean_error, mean_mean_phred) = mean_error_and_phred(&mean_errors[..]);
+    let mean_mean_error = mean_errors.iter().sum::<f64>() / mean_errors.len() as f64;
+    let mean_mean_phred = error_to_phred(mean_mean_error);
 
     // Mean read length.
     let mut read_lengths = Arc::try_unwrap(read_lengths).unwrap().into_inner().unwrap();
