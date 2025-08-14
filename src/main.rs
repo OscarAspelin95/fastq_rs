@@ -1,4 +1,5 @@
 use clap::Parser;
+use rayon::ThreadPoolBuilder;
 use simple_logger::SimpleLogger;
 
 mod args;
@@ -16,6 +17,11 @@ fn main() {
     SimpleLogger::new().init().unwrap();
 
     let args: App = App::parse();
+
+    ThreadPoolBuilder::new()
+        .num_threads(args.global_opts.threads)
+        .build_global()
+        .expect("Failed to configure global thread pool.");
 
     dispatch(args);
 }
