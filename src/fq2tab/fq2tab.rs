@@ -5,7 +5,7 @@ use crate::common::needletail_fastq_reader;
 use std::path::PathBuf;
 
 #[cfg(feature = "plot")]
-use crate::fq2tab::plot::generate_plots;
+use crate::fq2tab::plot::{PlotType, plot};
 
 pub fn fastq_fq2tab(fastq: &PathBuf, outfile: Option<PathBuf>) -> Result<(), AppError> {
     let mut reader = needletail_fastq_reader(fastq).map_err(|_| AppError::FastqError)?;
@@ -65,7 +65,7 @@ pub fn fastq_fq2tab(fastq: &PathBuf, outfile: Option<PathBuf>) -> Result<(), App
     writer.flush().map_err(|_| AppError::FastqError)?;
 
     #[cfg(feature = "plot")]
-    generate_plots(outfile);
+    plot(outfile, PlotType::ReadScatter);
 
     Ok(())
 }
