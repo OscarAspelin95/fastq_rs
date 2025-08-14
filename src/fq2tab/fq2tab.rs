@@ -5,7 +5,30 @@ use crate::common::needletail_fastq_reader;
 use std::path::PathBuf;
 
 #[cfg(feature = "plot")]
-use crate::fq2tab::plot::{PlotType, plot};
+use crate::fq2tab::plot::{PlotType, plot, tsv_to_df};
+
+#[cfg(feature = "plot")]
+fn generate_plots(outfile: Option<PathBuf>) {
+    use crate::common::replace_extension;
+
+    let read_tsv = match outfile {
+        Some(read_tsv) => read_tsv,
+        None => return,
+    };
+
+    let df = tsv_to_df(&read_tsv);
+
+    plot(
+        &df,
+        PlotType::ReadScatter,
+        &replace_extension(&read_tsv, Some("scatter"), "html"),
+    );
+    plot(
+        &df,
+        PlotType::ReadBox,
+        &replace_extension(&read_tsv, Some("box"), "html"),
+    );
+}
 
 pub fn fastq_fq2tab(fastq: &PathBuf, outfile: Option<PathBuf>) -> Result<(), AppError> {
     let mut reader = needletail_fastq_reader(fastq).map_err(|_| AppError::FastqError)?;
@@ -65,7 +88,7 @@ pub fn fastq_fq2tab(fastq: &PathBuf, outfile: Option<PathBuf>) -> Result<(), App
     writer.flush().map_err(|_| AppError::FastqError)?;
 
     #[cfg(feature = "plot")]
-    plot(outfile, PlotType::ReadScatter);
+    generate_plots(outfile);
 
     Ok(())
 }

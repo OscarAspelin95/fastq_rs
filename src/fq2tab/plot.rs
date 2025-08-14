@@ -1,24 +1,22 @@
-use plotlars::{Plot, Rgb, ScatterPlot};
+use plotlars::{BoxPlot, Plot, Rgb, ScatterPlot};
 use polars::prelude::*;
 use std::path::PathBuf;
 
 pub enum PlotType {
     ReadScatter,
+    ReadBox,
 }
 
-fn plot_read_scatter(outfile: Option<PathBuf>) {
-    let stats_tsv = match outfile {
-        Some(stats_tsv) => stats_tsv,
-        None => return,
-    };
-
+pub fn tsv_to_df(read_tsv: &PathBuf) -> DataFrame {
     // Assumes column header is first
-    let df = LazyCsvReader::new(PlPath::new(stats_tsv.to_str().unwrap()))
+    let df = LazyCsvReader::new(PlPath::new(read_tsv.to_str().unwrap()))
         .with_separator(b'\t')
         .with_has_header(true)
         .with_truncate_ragged_lines(true)
         .finish()
-        .expect("Failed to read provided .tsv file.")
+        .unwrap();
+
+    return df
         .with_column(
             when(col("read_phred").gt_eq(30))
                 .then(lit("Very High"))
@@ -28,13 +26,14 @@ fn plot_read_scatter(outfile: Option<PathBuf>) {
                 .then(lit("Medium"))
                 .otherwise(lit("Low"))
                 .alias("quality"),
-        );
-
-    let builder = ScatterPlot::builder()
-        .data(
-            &df.collect()
-                .expect("Failed to convert LazyFrame to DataFrame."),
         )
+        .collect()
+        .expect("Failed to read and generate DataFrame.");
+}
+
+fn plot_read_scatter(df: &DataFrame, outfile: &PathBuf) {
+    let builder = ScatterPlot::builder()
+        .data(df)
         .x("read_length")
         // NOTE - does not seem to work.
         .x_title("Read Length")
@@ -44,6 +43,7 @@ fn plot_read_scatter(outfile: Option<PathBuf>) {
         .legend_title("Quality")
         .group("quality")
         .plot_title("Read scatter plot")
+        .size(3)
         // NOTE - we currently cannot map groups to colors
         // so this is not expected to always work.
         .colors(vec![
@@ -60,11 +60,44 @@ fn plot_read_scatter(outfile: Option<PathBuf>) {
 
     builder.plot();
 
-    // TODO - add builder.write_html().
+    builder.write_html(outfile.to_str().expect(""));
 }
 
-pub fn plot(outfile: Option<PathBuf>, plot_type: PlotType) {
+fn plot_read_box(df: &DataFrame, outfile: &PathBuf) {
+    let builder = BoxPlot::builder()
+        .data(df)
+        .group("quality")
+        // x-axis.
+        .labels("quality")
+        .x_title("Quality")
+        // y-axis.
+        .values("read_length")
+        .y_title("Read length")
+        // Misc.
+        .legend_title("Quality")
+        .plot_title("Read Length")
+        // NOTE - we currently cannot map groups to colors so this is not expected to always work.
+        // most probably, color order is the same as the lecographical order of the categorical values.
+        .colors(vec![
+            // High
+            Rgb(80, 200, 120), // Emerald Green.
+            // Low
+            Rgb(128, 0, 32), // Burgundy Red.
+            // Medium
+            Rgb(242, 140, 40), // Cadmium Orange.
+            // Very High.
+            Rgb(65, 105, 255), // Royal Blue.
+        ])
+        .build();
+
+    builder.plot();
+
+    builder.write_html(outfile.to_str().expect(""));
+}
+
+pub fn plot(df: &DataFrame, plot_type: PlotType, outfile: &PathBuf) {
     match plot_type {
-        PlotType::ReadScatter => plot_read_scatter(outfile),
+        PlotType::ReadScatter => plot_read_scatter(df, outfile),
+        PlotType::ReadBox => plot_read_box(df, outfile),
     }
 }
