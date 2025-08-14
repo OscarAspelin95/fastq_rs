@@ -17,7 +17,6 @@ Run with:<br>
 
 ## ToDo
 - [ ] Improve error handling and add more error types.
-- [ ] Rayon global threadpool for provided --threads arg.
 
 ## Subcommands
 🔴 Not implemented yet (but planning to).<br>
