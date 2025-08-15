@@ -40,6 +40,23 @@ pub enum SubCommand {
         #[clap(short, long)]
         outfile: Option<PathBuf>,
     },
+    Sanitize {
+        #[clap(short, long)]
+        fastq: PathBuf,
+
+        #[clap(short, long)]
+        outfile: Option<PathBuf>,
+    },
+    Head {
+        #[clap(short, long)]
+        fastq: PathBuf,
+
+        #[clap(short, long, default_value_t = 5)]
+        num_reads: usize,
+
+        #[clap(short, long)]
+        outfile: Option<PathBuf>,
+    },
     Sort {
         #[clap(short, long)]
         fastq: PathBuf,

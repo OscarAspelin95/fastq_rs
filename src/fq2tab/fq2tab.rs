@@ -5,11 +5,9 @@ use crate::common::needletail_fastq_reader;
 use std::path::PathBuf;
 
 #[cfg(feature = "plot")]
-use crate::fq2tab::plot::{PlotType, plot, tsv_to_df};
-
-#[cfg(feature = "plot")]
 fn generate_plots(outfile: Option<PathBuf>) {
     use crate::common::replace_extension;
+    use crate::fq2tab::plot::{PlotType, plot, tsv_to_df};
 
     let read_tsv = match outfile {
         Some(read_tsv) => read_tsv,
