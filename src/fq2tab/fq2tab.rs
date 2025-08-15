@@ -18,12 +18,6 @@ fn generate_plots(outfile: Option<PathBuf>) {
 
     plot(
         &df,
-        PlotType::ReadScatter,
-        &replace_extension(&read_tsv, Some("scatter"), "html"),
-    );
-
-    plot(
-        &df,
         PlotType::ReadBox,
         &replace_extension(&read_tsv, Some("box"), "html"),
     );
@@ -32,6 +26,12 @@ fn generate_plots(outfile: Option<PathBuf>) {
         &df,
         PlotType::ReadHist,
         &replace_extension(&read_tsv, Some("hist"), "html"),
+    );
+
+    plot(
+        &df,
+        PlotType::ReadContour,
+        &replace_extension(&read_tsv, Some("contour"), "html"),
     );
 }
 
