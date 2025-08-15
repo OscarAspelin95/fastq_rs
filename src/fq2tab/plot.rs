@@ -1,10 +1,11 @@
-use plotlars::{BoxPlot, Plot, Rgb, ScatterPlot};
+use plotlars::{BoxPlot, Histogram, Plot, Rgb, ScatterPlot};
 use polars::prelude::*;
 use std::path::PathBuf;
 
 pub enum PlotType {
     ReadScatter,
     ReadBox,
+    ReadHist,
 }
 
 pub fn tsv_to_df(read_tsv: &PathBuf) -> DataFrame {
@@ -59,8 +60,7 @@ fn plot_read_scatter(df: &DataFrame, outfile: &PathBuf) {
         .build();
 
     builder.plot();
-
-    builder.write_html(outfile.to_str().expect(""));
+    builder.write_html(outfile.to_str().expect("Failed to covert PathBuf to &str"));
 }
 
 fn plot_read_box(df: &DataFrame, outfile: &PathBuf) {
@@ -91,13 +91,38 @@ fn plot_read_box(df: &DataFrame, outfile: &PathBuf) {
         .build();
 
     builder.plot();
+    builder.write_html(outfile.to_str().expect("Failed to covert PathBuf to &str"));
+}
 
-    builder.write_html(outfile.to_str().expect(""));
+fn plot_read_hist(df: &DataFrame, outfile: &PathBuf) {
+    let builder = Histogram::builder()
+        .data(&df)
+        .x("read_length")
+        .x_title("Read Length")
+        .group("quality")
+        .legend_title("Quality")
+        .opacity(0.5)
+        .plot_title("Read Length Histogram")
+        .colors(vec![
+            // High
+            Rgb(80, 200, 120), // Emerald Green.
+            // Low
+            Rgb(128, 0, 32), // Burgundy Red.
+            // Medium
+            Rgb(242, 140, 40), // Cadmium Orange.
+            // Very High.
+            Rgb(65, 105, 255), // Royal Blue.
+        ])
+        .build();
+
+    builder.plot();
+    builder.write_html(outfile.to_str().expect("Failed to covert PathBuf to &str"));
 }
 
 pub fn plot(df: &DataFrame, plot_type: PlotType, outfile: &PathBuf) {
     match plot_type {
         PlotType::ReadScatter => plot_read_scatter(df, outfile),
         PlotType::ReadBox => plot_read_box(df, outfile),
+        PlotType::ReadHist => plot_read_hist(df, outfile),
     }
 }

@@ -21,10 +21,17 @@ fn generate_plots(outfile: Option<PathBuf>) {
         PlotType::ReadScatter,
         &replace_extension(&read_tsv, Some("scatter"), "html"),
     );
+
     plot(
         &df,
         PlotType::ReadBox,
         &replace_extension(&read_tsv, Some("box"), "html"),
+    );
+
+    plot(
+        &df,
+        PlotType::ReadHist,
+        &replace_extension(&read_tsv, Some("hist"), "html"),
     );
 }
 
