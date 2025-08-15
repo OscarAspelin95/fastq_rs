@@ -1,12 +1,20 @@
 use crate::args::{App, SubCommand};
 use crate::fq2fa::fastq_fq2fa;
 use crate::fq2tab::fastq_fq2tab;
+use crate::head::fastq_head;
+use crate::sanitize::fastq_sanitize;
 use crate::sort::fastq_sort;
 use crate::stats::fastq_stats;
 
 pub fn dispatch(args: App) {
     match args.command {
         SubCommand::Stats { fastq, outfile } => fastq_stats(&fastq, outfile).unwrap(),
+        SubCommand::Sanitize { fastq, outfile } => fastq_sanitize(&fastq, outfile).unwrap(),
+        SubCommand::Head {
+            fastq,
+            num_reads,
+            outfile,
+        } => fastq_head(&fastq, num_reads, outfile).unwrap(),
         SubCommand::Sort {
             fastq,
             by,

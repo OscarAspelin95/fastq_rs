@@ -6,6 +6,8 @@ mod args;
 mod common;
 mod fq2fa;
 mod fq2tab;
+mod head;
+mod sanitize;
 mod sort;
 
 mod stats;

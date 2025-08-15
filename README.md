@@ -7,9 +7,17 @@
 
 ## Installation
 Clone the repository or download the source code. Enter the fastq_rs directory and run:<br>
+
 `cargo build --release`
 
 The generated binary is available in `target/release/fastq_rs`.
+
+## Plots
+To enable plotting, compile with the `plot` feature.<br>
+
+`cargo build --release --features plot`<br>
+
+Plots will be automatically generated to applicable subcommands.
 
 ## Usage
 Run with:<br>
@@ -31,6 +39,29 @@ Run with:<br>
 Optional arguments:
 <pre>
 <b>-o/--outfile</b> [stats.json] - Output file.
+</pre>
+
+### fastq_rs `sanitize`
+🟡 Attempt to sanitize malformatted reads.
+
+`fastq_rs sanitize --fastq <reads.fastq.gz> <optional_args>`
+
+Optional arguments:
+<pre>
+
+<b>-o/--outfile</b> [stdout] - Output file.
+</pre>
+
+### fastq_rs `head`
+🟡 Output the first `n` reads.
+
+`fastq_rs head --fastq <reads.fastq.gz> <optional_args>`
+
+Optional arguments:
+<pre>
+<b>-n/--num-seqs</b> [5] - Number of reads to output.
+
+<b>-o/--outfile</b> [stdout] - Output file.
 </pre>
 
 ### fastq_rs `sort`
@@ -67,7 +98,7 @@ Optional arguments:
 </pre>
 
 ### fastq_rs `fq2-tab`
-🔴 Convert FASTQ to a .tsv file with information about each read.
+🟡 Convert FASTQ to a .tsv file with information about each read. If compiled with the `plot` feature, will generate a read scatter and boxplot.
 
 `fastq_rs fq2-tab --fastq <reads.fastq.gz> <optional_args>`
 
@@ -75,6 +106,7 @@ Optional arguments:
 <pre>
 <b>-o/--outfile</b> [stdout] - Output file.
 </pre>
+
 
 ### fastq_rs `filter`
 🔴 Filter reads.
@@ -103,6 +135,8 @@ Optional arguments:
 <pre>
 <b>-w/--window-size</b> [10] - Sliding window to check and trim.
 
+<b>--min-length</b> [100] - Minimum read length allowed after trimming.
+
 <b>--max-error</b> [0.05] - Maximum allowed error in window. Higher error windows will be trimmed.
 
 <b>--barcodes-forward</b> [none] - 5'-3' barcodes to trim at the start of reads.
@@ -111,7 +145,7 @@ Optional arguments:
 
 <b>--barcode-mismatches</b> [2] - Allow this number of mismatches between barcode and read.
 
-<b>--barcode-margin</b> [10] - Allow barcode to match within this distance from the start/end of read.
+<b>--barcode-margin</b> [10] - Allow barcodes to match within this distance from the start/end of read.
 
 <b>-o/--outfile</b> [stdout] - Output file.
 </pre>
