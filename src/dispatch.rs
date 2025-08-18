@@ -11,13 +11,13 @@ use crate::trim::fastq_trim;
 
 pub fn dispatch(args: App) {
     match args.command {
-        SubCommand::Stats { fastq, outfile } => fastq_stats(&fastq, outfile).unwrap(),
-        SubCommand::Sanitize { fastq, outfile } => fastq_sanitize(&fastq, outfile).unwrap(),
+        SubCommand::Stats { fastq, outfile } => fastq_stats(fastq, outfile).unwrap(),
+        SubCommand::Sanitize { fastq, outfile } => fastq_sanitize(fastq, outfile).unwrap(),
         SubCommand::Head {
             fastq,
             num_reads,
             outfile,
-        } => fastq_head(&fastq, num_reads, outfile).unwrap(),
+        } => fastq_head(fastq, num_reads, outfile).unwrap(),
         SubCommand::Filter {
             fastq,
             min_len,
@@ -30,7 +30,7 @@ pub fn dispatch(args: App) {
             max_ambiguous,
             outfile,
         } => fastq_filter(
-            &fastq,
+            fastq,
             min_len,
             max_len,
             min_error,
@@ -53,7 +53,7 @@ pub fn dispatch(args: App) {
             barcode_margin,
             outfile,
         } => fastq_trim(
-            &fastq,
+            fastq,
             min_len,
             trim_start,
             trim_end,
@@ -74,7 +74,7 @@ pub fn dispatch(args: App) {
             max_minimizer_error,
             outfile,
         } => fastq_sort(
-            &fastq,
+            fastq,
             &by,
             reverse,
             window_size,
@@ -84,8 +84,8 @@ pub fn dispatch(args: App) {
             outfile,
         )
         .unwrap(),
-        SubCommand::Fq2Fa { fastq, outfile } => fastq_fq2fa(&fastq, outfile).unwrap(),
-        SubCommand::Fq2Tab { fastq, outfile } => fastq_fq2tab(&fastq, outfile).unwrap(),
-        SubCommand::Sample { fastq, by, outfile } => fastq_sample(&fastq, by, outfile).unwrap(),
+        SubCommand::Fq2Fa { fastq, outfile } => fastq_fq2fa(fastq, outfile).unwrap(),
+        SubCommand::Fq2Tab { fastq, outfile } => fastq_fq2tab(fastq, outfile).unwrap(),
+        SubCommand::Sample { fastq, by, outfile } => fastq_sample(fastq, by, outfile).unwrap(),
     }
 }

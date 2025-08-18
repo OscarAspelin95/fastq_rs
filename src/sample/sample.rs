@@ -4,8 +4,12 @@ use bio::io::fastq::Record;
 use rand::{prelude::*, rng};
 use std::path::PathBuf;
 
-pub fn fastq_sample(fastq: &PathBuf, by: f32, outfile: Option<PathBuf>) -> Result<(), AppError> {
-    let reader = bio_fastq_reader(&fastq).map_err(|_| AppError::FastqError)?;
+pub fn fastq_sample(
+    fastq: Option<PathBuf>,
+    by: f32,
+    outfile: Option<PathBuf>,
+) -> Result<(), AppError> {
+    let reader = bio_fastq_reader(fastq).map_err(|_| AppError::FastqError)?;
     let mut writer = bio_fastq_writer(outfile).map_err(|_| AppError::FastqError)?;
 
     let records: Vec<Record> = reader

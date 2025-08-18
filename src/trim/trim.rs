@@ -5,7 +5,7 @@ use std::path::PathBuf;
 /// TODO - switch needletail for bio parser to enable multi-threading.
 #[allow(unused)]
 pub fn fastq_trim(
-    fastq: &PathBuf,
+    fastq: Option<PathBuf>,
     min_len: usize,
     trim_start: usize,
     trim_end: usize,
@@ -15,7 +15,7 @@ pub fn fastq_trim(
     barcode_margin: usize,
     outfile: Option<PathBuf>,
 ) -> Result<(), AppError> {
-    let mut reader = needletail_fastq_reader(&fastq).map_err(|_| AppError::FastqError)?;
+    let mut reader = needletail_fastq_reader(fastq).map_err(|_| AppError::FastqError)?;
     let mut writer = general_bufwriter(outfile).map_err(|_| AppError::FastqError)?;
 
     while let Some(record) = reader.next() {

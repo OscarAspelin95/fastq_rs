@@ -35,21 +35,21 @@ pub struct GlobalOpts {
 pub enum SubCommand {
     Stats {
         #[clap(short, long)]
-        fastq: PathBuf,
+        fastq: Option<PathBuf>,
 
         #[clap(short, long)]
         outfile: Option<PathBuf>,
     },
     Sanitize {
         #[clap(short, long)]
-        fastq: PathBuf,
+        fastq: Option<PathBuf>,
 
         #[clap(short, long)]
         outfile: Option<PathBuf>,
     },
     Head {
         #[clap(short, long)]
-        fastq: PathBuf,
+        fastq: Option<PathBuf>,
 
         #[clap(short, long, default_value_t = 5)]
         num_reads: usize,
@@ -59,7 +59,7 @@ pub enum SubCommand {
     },
     Filter {
         #[clap(short, long)]
-        fastq: PathBuf,
+        fastq: Option<PathBuf>,
 
         #[clap(short, long, default_value_t = 0)]
         min_len: usize,
@@ -90,7 +90,7 @@ pub enum SubCommand {
     },
     Sort {
         #[clap(short, long)]
-        fastq: PathBuf,
+        fastq: Option<PathBuf>,
 
         #[clap(value_enum, short, long, default_value_t = SortType::Length)]
         by: SortType,
@@ -115,21 +115,21 @@ pub enum SubCommand {
     },
     Fq2Fa {
         #[clap(short, long)]
-        fastq: PathBuf,
+        fastq: Option<PathBuf>,
 
         #[clap(short, long)]
         outfile: Option<PathBuf>,
     },
     Fq2Tab {
         #[clap(short, long)]
-        fastq: PathBuf,
+        fastq: Option<PathBuf>,
 
         #[clap(short, long)]
         outfile: Option<PathBuf>,
     },
     Sample {
         #[clap(short, long)]
-        fastq: PathBuf,
+        fastq: Option<PathBuf>,
 
         #[clap(short, long, default_value_t = 1.0)]
         by: f32,
@@ -139,7 +139,7 @@ pub enum SubCommand {
     },
     Trim {
         #[clap(short, long)]
-        fastq: PathBuf,
+        fastq: Option<PathBuf>,
 
         #[clap(short, long, default_value_t = 0)]
         min_len: usize,

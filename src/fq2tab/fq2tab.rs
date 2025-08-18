@@ -35,7 +35,7 @@ fn generate_plots(outfile: Option<PathBuf>) {
     );
 }
 
-pub fn fastq_fq2tab(fastq: &PathBuf, outfile: Option<PathBuf>) -> Result<(), AppError> {
+pub fn fastq_fq2tab(fastq: Option<PathBuf>, outfile: Option<PathBuf>) -> Result<(), AppError> {
     let mut reader = needletail_fastq_reader(fastq).map_err(|_| AppError::FastqError)?;
     let mut writer = general_bufwriter(outfile.clone()).map_err(|_| AppError::FastqError)?;
 
