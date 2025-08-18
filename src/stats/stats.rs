@@ -22,8 +22,8 @@ struct FastqStats {
     longest: Option<Vec<usize>>,
 }
 
-pub fn fastq_stats(fastq: &PathBuf, outfile: Option<PathBuf>) -> Result<(), AppError> {
-    let reader = bio_fastq_reader(&fastq).map_err(|_| AppError::FastqError)?;
+pub fn fastq_stats(fastq: Option<PathBuf>, outfile: Option<PathBuf>) -> Result<(), AppError> {
+    let reader = bio_fastq_reader(fastq).map_err(|_| AppError::FastqError)?;
 
     // Initialize thread safe variables.
     let num_reads = AtomicUsize::new(0);

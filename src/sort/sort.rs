@@ -22,7 +22,7 @@ fn check_reverse(a: f64, b: f64, reverse: bool) -> Ordering {
 }
 
 pub fn fastq_sort(
-    fastq: &PathBuf,
+    fastq: Option<PathBuf>,
     by: &SortType,
     reverse: bool,
     // Minimizer specific arguments.
@@ -33,7 +33,7 @@ pub fn fastq_sort(
     //
     outfile: Option<PathBuf>,
 ) -> Result<(), AppError> {
-    let reader = bio_fastq_reader(&fastq).map_err(|_| AppError::FastqError)?;
+    let reader = bio_fastq_reader(fastq).map_err(|_| AppError::FastqError)?;
 
     // Window size cannot be even, because Minimizer builder
     // will complain in this case (due to lexicographic tie breaking).

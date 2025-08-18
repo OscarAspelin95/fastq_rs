@@ -3,7 +3,7 @@ use crate::common::{general_bufwriter, needletail_fastq_reader};
 use std::path::PathBuf;
 
 pub fn fastq_filter(
-    fastq: &PathBuf,
+    fastq: Option<PathBuf>,
     min_len: usize,
     max_len: usize,
     min_error: f64,
@@ -14,7 +14,7 @@ pub fn fastq_filter(
     max_ambiguous: usize,
     outfile: Option<PathBuf>,
 ) -> Result<(), AppError> {
-    let mut reader = needletail_fastq_reader(&fastq).map_err(|_| AppError::FastqError)?;
+    let mut reader = needletail_fastq_reader(fastq).map_err(|_| AppError::FastqError)?;
     let mut writer = general_bufwriter(outfile).map_err(|_| AppError::FastqError)?;
 
     while let Some(record) = reader.next() {
