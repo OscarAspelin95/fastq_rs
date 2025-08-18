@@ -1,5 +1,5 @@
 use clap::{Args, Parser, Subcommand, ValueEnum};
-use std::path::PathBuf;
+use std::{path::PathBuf, usize};
 
 #[derive(Debug, Clone, ValueEnum)]
 pub enum SortType {
@@ -57,6 +57,37 @@ pub enum SubCommand {
         #[clap(short, long)]
         outfile: Option<PathBuf>,
     },
+    Filter {
+        #[clap(short, long)]
+        fastq: PathBuf,
+
+        #[clap(short, long, default_value_t = 0)]
+        min_len: usize,
+
+        #[clap(short, long, default_value_t = usize::MAX)]
+        max_len: usize,
+
+        #[clap(short, long, default_value_t = 0.0)]
+        min_error: f64,
+
+        #[clap(short, long, default_value_t = 1.0)]
+        max_error: f64,
+
+        #[clap(short, long, default_value_t = 0)]
+        min_softmasked: usize,
+
+        #[clap(short, long, default_value_t = usize::MAX)]
+        max_softmasked: usize,
+
+        #[clap(short, long, default_value_t = 0)]
+        min_ambiguous: usize,
+
+        #[clap(short, long, default_value_t = usize::MAX)]
+        max_ambiguous: usize,
+
+        #[clap(short, long)]
+        outfile: Option<PathBuf>,
+    },
     Sort {
         #[clap(short, long)]
         fastq: PathBuf,
@@ -92,6 +123,44 @@ pub enum SubCommand {
     Fq2Tab {
         #[clap(short, long)]
         fastq: PathBuf,
+
+        #[clap(short, long)]
+        outfile: Option<PathBuf>,
+    },
+    Sample {
+        #[clap(short, long)]
+        fastq: PathBuf,
+
+        #[clap(short, long, default_value_t = 1.0)]
+        by: f32,
+
+        #[clap(short, long)]
+        outfile: Option<PathBuf>,
+    },
+    Trim {
+        #[clap(short, long)]
+        fastq: PathBuf,
+
+        #[clap(short, long, default_value_t = 0)]
+        min_len: usize,
+
+        #[clap(short, long, default_value_t = 0)]
+        trim_start: usize,
+
+        #[clap(short, long, default_value_t = 0)]
+        trim_end: usize,
+
+        #[clap(short, long, required = false)]
+        barcode_start: Option<Vec<String>>,
+
+        #[clap(short, long, required = false)]
+        barcode_end: Option<Vec<String>>,
+
+        #[clap(short, long, default_value_t = 2)]
+        barcode_mismatches: usize,
+
+        #[clap(short, long, default_value_t = 10)]
+        barcode_margin: usize,
 
         #[clap(short, long)]
         outfile: Option<PathBuf>,

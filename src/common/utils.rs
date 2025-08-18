@@ -1,4 +1,5 @@
 use lazy_static::lazy_static;
+use std::collections::HashMap;
 
 lazy_static! {
     pub static ref PHRED_TO_ERROR: [f64; 126] = {
@@ -35,4 +36,37 @@ pub fn mean_error_and_phred(qual: &[u8]) -> (f64, u8) {
 #[inline]
 pub fn mean_len(lengths: &[usize]) -> usize {
     return lengths.iter().sum::<usize>() / lengths.len();
+}
+
+#[inline]
+pub fn nucleotide_counts(seq: &[u8]) -> (HashMap<&u8, usize>, usize, usize) {
+    let mut canonical: HashMap<&u8, usize> = HashMap::with_capacity(4);
+
+    // Counts of non-canonical nucleotides.
+    let mut softmasked_count: usize = 0;
+    let mut ambiguous_count: usize = 0;
+
+    for nt in seq.iter() {
+        match nt {
+            // Canonical.
+            b'A' | b'C' | b'G' | b'T' => {
+                canonical
+                    .entry(nt)
+                    .and_modify(|count| *count += 1)
+                    .or_insert(1);
+            }
+
+            // Softmasked.
+            b'a' | b'c' | b'g' | b't' => {
+                softmasked_count += 1;
+            }
+
+            // Ambiguous
+            _ => {
+                ambiguous_count += 1;
+            }
+        }
+    }
+
+    return (canonical, softmasked_count, ambiguous_count);
 }

@@ -48,7 +48,6 @@ Optional arguments:
 
 Optional arguments:
 <pre>
-
 <b>-o/--outfile</b> [stdout] - Output file.
 </pre>
 
@@ -109,7 +108,7 @@ Optional arguments:
 
 
 ### fastq_rs `filter`
-🔴 Filter reads.
+🟡 Filter reads.
 
 `fastq_rs filter --fastq <reads.fastq.gz> <optional_args>`
 
@@ -122,6 +121,26 @@ Optional arguments:
 <b>--min-err</b> [0.0] - Minimum allowed mean read error.
 
 <b>--max-err</b> [1.0] - Maximum allowed mean read error.
+
+<b>--min-softmasked</b> [0] - Minimum allowed num softmasked bases.
+
+<b>--max-softmasked</b> [usize::MAX] - Maximum allowed num softmasked bases.
+
+<b>--min-ambiguous</b> [0] - Minimum allowed num ambiguous bases.
+
+<b>--max-ambiguous</b> [usize::MAX] - Maximum allowed num ambiguous bases.
+
+<b>-o/--outfile</b> [stdout] - Output file.
+</pre>
+
+### fastq_rs `sample`
+🟡 (down)sample reads by fraction or number of reads.
+
+`fastq_rs sample --fastq <reads.fastq.gz> <optional_args>`
+
+Optional arguments:
+<pre>
+<b>-b/--by</b> [1.0] - How to sample. Inputs <= 1.0 signifies sampling by fraction. Inputs > 1.0 signifies sampling by (whole) number of reads.
 
 <b>-o/--outfile</b> [stdout] - Output file.
 </pre>
