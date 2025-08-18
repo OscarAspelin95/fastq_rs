@@ -1,5 +1,5 @@
 pub mod utils;
-pub use utils::{PHRED_TO_ERROR, mean_error_and_phred, mean_len};
+pub use utils::{PHRED_TO_ERROR, mean_error_and_phred, mean_len, nucleotide_counts};
 
 pub mod files;
 pub use files::replace_extension;

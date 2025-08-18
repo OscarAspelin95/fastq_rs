@@ -4,13 +4,16 @@ use simple_logger::SimpleLogger;
 
 mod args;
 mod common;
+mod filter;
 mod fq2fa;
 mod fq2tab;
 mod head;
+mod sample;
 mod sanitize;
 mod sort;
-
 mod stats;
+mod trim;
+
 use crate::args::App;
 
 mod dispatch;
