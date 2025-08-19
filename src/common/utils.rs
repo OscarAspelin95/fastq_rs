@@ -70,3 +70,20 @@ pub fn nucleotide_counts(seq: &[u8]) -> (HashMap<&u8, usize>, usize, usize) {
 
     return (canonical, softmasked_count, ambiguous_count);
 }
+
+#[inline]
+pub fn reverse_complement(seq: &[u8]) -> Vec<u8> {
+    let reverse_complement: Vec<u8> = seq
+        .iter()
+        .rev()
+        .map(|nt| match nt {
+            b'A' => b'T',
+            b'C' => b'G',
+            b'G' => b'C',
+            b'T' => b'A',
+            _ => panic!(""),
+        })
+        .collect();
+
+    return reverse_complement;
+}

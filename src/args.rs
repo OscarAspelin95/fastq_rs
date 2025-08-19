@@ -150,10 +150,10 @@ pub enum SubCommand {
         #[clap(short, long, default_value_t = 0)]
         trim_end: usize,
 
-        #[clap(short, long, required = false)]
+        #[clap(short, long, required = false, value_delimiter = ' ')]
         barcode_start: Option<Vec<String>>,
 
-        #[clap(short, long, required = false)]
+        #[clap(short, long, required = false, value_delimiter = ' ')]
         barcode_end: Option<Vec<String>>,
 
         #[clap(short, long, default_value_t = 2)]

@@ -15,7 +15,7 @@ pub fn write_json<T: Serialize>(outfile: Option<PathBuf>, s: T) -> Result<(), Ap
     Ok(())
 }
 
-pub fn general_bufwriter(outfile: Option<PathBuf>) -> Result<Box<dyn Write>, AppError> {
+pub fn general_bufwriter(outfile: Option<PathBuf>) -> Result<Box<dyn Write + Send>, AppError> {
     match outfile {
         Some(outfile) => {
             let f = File::create(outfile).map_err(|_| AppError::FastqError)?;
