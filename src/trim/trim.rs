@@ -1,50 +1,73 @@
 use crate::common::AppError;
 use crate::common::{bio_fastq_reader, general_bufwriter, reverse_complement};
-use memchr::memmem;
+use bio::pattern_matching::myers::MyersBuilder;
 use rayon::prelude::*;
+use std::fs::File;
+use std::io::BufReader;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 
-fn trim_forward<'a>(seq: &'a [u8], forward_barcode: &'a [u8], mut margin: usize) -> Option<usize> {
-    // Forward barcode:
-    // * We take the first occurring hit (if exists).
-    let mut forward_hit = memmem::find(seq, forward_barcode);
-
-    let forward_hit_location = forward_hit
-        .take_if(|h| h <= &mut margin)
-        .map(|h| h + forward_barcode.len());
-
-    return forward_hit_location;
+// Allow for ambiguous nucleotide matches.
+#[inline]
+fn myers_builder(primer_seq: &[u8]) -> bio::pattern_matching::myers::Myers {
+    return MyersBuilder::new()
+        .ambig(b'N', b"ACGT")
+        .ambig(b'R', b"AG")
+        .ambig(b'Y', b"CT")
+        .ambig(b'S', b"GC")
+        .ambig(b'W', b"AT")
+        .ambig(b'K', b"GT")
+        .ambig(b'M', b"AC")
+        .ambig(b'B', b"CGT")
+        .ambig(b'D', b"AGT")
+        .ambig(b'H', b"ACT")
+        .ambig(b'V', b"ACG")
+        .build_64(primer_seq);
 }
 
-fn trim_reverse<'a>(seq: &'a [u8], reverse_barcode: &'a [u8], margin: usize) -> Option<usize> {
-    let mut reverse_hit = memmem::rfind(seq, reverse_barcode);
-    let reverse_hit_location =
-        reverse_hit.take_if(|h| h >= &mut (seq.len() - margin - reverse_barcode.len()));
+fn find_fuzzy<'a>(seq: &[u8], barcode: &'a [u8], max_mismatches: u8) -> Option<usize> {
+    let myers = myers_builder(barcode);
 
-    return reverse_hit_location;
+    let (start, num_mismatches) = myers.find_best_end(seq);
+
+    if num_mismatches <= max_mismatches {
+        return Some(start);
+    }
+
+    return None;
 }
 
+/// I'm not happy with the multi-thread implementation with
+/// lots of Arcs and Mutexes floating around. It might be the
+/// case that needletail single-thread is actually faster.
 pub fn fastq_trim(
     fastq: Option<PathBuf>,
     min_len: usize,
     trim_start: usize,
     trim_end: usize,
-    barcodes_start: Option<Vec<String>>,
-    barcodes_end: Option<Vec<String>>,
-    barcode_mismatches: usize,
+    barcodes_forward: Option<Vec<String>>,
+    barcodes_reverse: Option<Vec<String>>,
+    max_mismatches: u8,
     barcode_margin: usize,
     outfile: Option<PathBuf>,
+    barcodes_tsv: PathBuf,
 ) -> Result<(), AppError> {
+    // Fastq reader/writer.
     let reader = bio_fastq_reader(fastq).map_err(|_| AppError::FastqError)?;
-    let writer = Arc::new(Mutex::new(
+    let fastq_writer = Arc::new(Mutex::new(
         general_bufwriter(outfile).map_err(|_| AppError::FastqError)?,
     ));
 
-    let barcodes_start: Vec<String> = barcodes_start.unwrap_or(vec![]);
+    // Tsv writer (to file).
+    let tsv_writer = Arc::new(Mutex::new(
+        general_bufwriter(Some(barcodes_tsv)).map_err(|_| AppError::FastqError)?,
+    ));
+
+    // If not supplied, empty vec means no iterating.
+    let barcodes_start: Vec<String> = barcodes_forward.unwrap_or(vec![]);
 
     // For reverse barcodes, we need to first reverse complement.
-    let barcodes_end: Vec<String> = barcodes_end
+    let barcodes_end: Vec<String> = barcodes_reverse
         .as_ref()
         .map(|vec| {
             vec.iter()
@@ -61,41 +84,76 @@ pub fn fastq_trim(
 
         let mut seq = record.seq();
         let mut qual = record.qual();
+        let mut trimmed: bool = false;
+        let mut found_barcode_forward: Option<&[u8]> = None;
+        let mut found_barcode_reverse: Option<&[u8]> = None;
 
-        for barcode_start in &barcodes_start {
-            let forward_hit = trim_forward(seq, barcode_start.as_bytes(), barcode_margin);
+        for barcode_forward in &barcodes_start {
+            let barcode_len = barcode_forward.len();
+            let total_margin = barcode_len + barcode_margin + 2;
 
-            match forward_hit {
+            // Skip too short sequences.
+            if seq.len() <= total_margin {
+                continue;
+            }
+
+            // Only look in relevant part of seq.
+            let forward_start = find_fuzzy(
+                &seq[..total_margin],
+                barcode_forward.as_bytes(),
+                max_mismatches,
+            );
+
+            match forward_start {
                 None => continue,
-                Some(forward_hit_location) => {
-                    seq = &seq[forward_hit_location..];
-                    qual = &qual[forward_hit_location..];
+                Some(forward_start) => {
+                    seq = &seq[forward_start + barcode_len..];
+                    qual = &qual[forward_start + barcode_len..];
+                    found_barcode_forward = Some(barcode_forward.as_bytes());
+                    trimmed = true;
+
                     break;
                 }
             }
         }
 
-        for barcode_end in &barcodes_end {
-            let reverse_hit_location = trim_reverse(seq, barcode_end.as_bytes(), barcode_margin);
+        for barcode_reverse in &barcodes_end {
+            let barcode_len = barcode_reverse.len();
+            let seq_len = seq.len();
 
-            match reverse_hit_location {
+            let total_margin: usize = barcode_len + barcode_margin + 2;
+
+            // Skip too short sequences.
+            if seq_len <= total_margin {
+                continue;
+            }
+
+            // Only look in relevant part of seq.
+            let reverse_start = find_fuzzy(
+                &seq[seq_len - total_margin..],
+                barcode_reverse.as_bytes(),
+                max_mismatches,
+            );
+
+            match reverse_start {
                 None => continue,
-                Some(reverse_hit_location) => {
-                    seq = &seq[..reverse_hit_location];
-                    qual = &qual[..reverse_hit_location];
+                Some(reverse_start) => {
+                    seq = &seq[..seq_len - reverse_start];
+                    qual = &qual[..seq_len - reverse_start];
+                    found_barcode_reverse = Some(barcode_reverse.as_bytes());
+                    trimmed = true;
+
                     break;
                 }
             }
         }
 
-        assert!(seq.len() == qual.len());
-
-        // We want to trim the entire read.
+        // We want to hard-trim the entire remaining seq.
         if trim_start >= seq.len() || trim_end >= seq.len() {
             return;
         }
 
-        // We want to trim the entire read.
+        // We want to hard-trim the entire remaining seq.
         if trim_start >= seq.len() - trim_end {
             return;
         }
@@ -104,7 +162,7 @@ pub fn fastq_trim(
         qual = &qual[trim_start..qual.len() - trim_end];
 
         if seq.len() >= min_len {
-            let mut w = writer.lock().unwrap();
+            let mut w = fastq_writer.lock().unwrap();
             w.write(b"@").unwrap();
             w.write(record.id().as_bytes()).unwrap();
             w.write(b"\n").unwrap();
@@ -114,6 +172,20 @@ pub fn fastq_trim(
             w.write(qual).unwrap();
             w.write(b"\n").unwrap();
         }
+
+        let mut s = tsv_writer.lock().unwrap();
+        s.write(record.id().as_bytes()).unwrap();
+        s.write(b"\t").unwrap();
+        s.write(record.seq().len().to_string().as_bytes()).unwrap();
+        s.write(b"\t").unwrap();
+        s.write(seq.len().to_string().as_bytes()).unwrap();
+        s.write(b"\t").unwrap();
+        s.write(trimmed.to_string().as_bytes()).unwrap();
+        s.write(b"\t").unwrap();
+        found_barcode_forward.map(|b| s.write(b).unwrap());
+        s.write(b"\t").unwrap();
+        found_barcode_reverse.map(|b| s.write(b).unwrap());
+        s.write(b"\n").unwrap();
     });
 
     Ok(())

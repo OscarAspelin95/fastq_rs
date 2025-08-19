@@ -36,6 +36,8 @@ Run with:<br>
 
 `fastq_rs stats --fastq <reads.fastq.gz> <optional_args>`
 
+Note - if no file is provided, `fastq_rs` will read from stdin (plain FASTQ).
+
 Optional arguments:
 <pre>
 <b>-o/--outfile</b> [stats.json] - Output file.
@@ -146,25 +148,26 @@ Optional arguments:
 </pre>
 
 ### fastq_rs `trim`
-🔴 Trim reads.
+🟡 Trim reads through fuzzy search with ambiguous nucleotide support.
 
 `fastq_rs trim --fastq <reads.fastq.gz> <optional_args>`
 
 Optional arguments:
 <pre>
-<b>-w/--window-size</b> [10] - Sliding window to check and trim.
 
-<b>--min-length</b> [100] - Minimum read length allowed after trimming.
+<b>--min-len</b> [0] - Minimum read length for trimmed read to be outputted.
 
-<b>--max-error</b> [0.05] - Maximum allowed error in window. Higher error windows will be trimmed.
+<b>--trim-start</b> [0] - Force trim this number of bases at the start of all reads.
 
-<b>--barcodes-forward</b> [none] - 5'-3' barcodes to trim at the start of reads.
+<b>--trim-end</b> [0] - Force trim this number of bases at the end of all reads.
 
-<b>--barcodes-reverse</b> [none] - 5'-3' barcodes to trim at the end of reads.
+<b>--barcode-forward</b> [none] - Barcode(s) to trim at the start of the read. Must be provided in 5' -> 3' direction.
 
-<b>--barcode-mismatches</b> [2] - Allow this number of mismatches between barcode and read.
+<b>--barcode-reverse</b> [none] - Barcode(s) to trim at the end of the read. Must be provided in 5' -> 3' direction.
 
-<b>--barcode-margin</b> [10] - Allow barcodes to match within this distance from the start/end of read.
+<b>--max-mismatches</b> [2] - Allow this many mismatches between the barcode and the read.
+
+<b>--barcode-margin</b> [10] - Allow the barcode to be located at most this number of bases from the start/end of the read.
 
 <b>-o/--outfile</b> [stdout] - Output file.
 </pre>

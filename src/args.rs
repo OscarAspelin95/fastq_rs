@@ -151,18 +151,21 @@ pub enum SubCommand {
         trim_end: usize,
 
         #[clap(short, long, required = false, value_delimiter = ' ')]
-        barcode_start: Option<Vec<String>>,
+        barcode_forward: Option<Vec<String>>,
 
         #[clap(short, long, required = false, value_delimiter = ' ')]
-        barcode_end: Option<Vec<String>>,
+        barcode_reverse: Option<Vec<String>>,
 
         #[clap(short, long, default_value_t = 2)]
-        barcode_mismatches: usize,
+        max_mismatches: u8,
 
         #[clap(short, long, default_value_t = 10)]
         barcode_margin: usize,
 
         #[clap(short, long)]
         outfile: Option<PathBuf>,
+
+        #[clap(short, long, default_value = "barcodes.tsv")]
+        barcodes_tsv: PathBuf,
     },
 }
