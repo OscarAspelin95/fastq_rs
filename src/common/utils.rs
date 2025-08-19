@@ -77,11 +77,25 @@ pub fn reverse_complement(seq: &[u8]) -> Vec<u8> {
         .iter()
         .rev()
         .map(|nt| match nt {
+            // Canonical
             b'A' => b'T',
             b'C' => b'G',
             b'G' => b'C',
             b'T' => b'A',
-            _ => panic!(""),
+            // Ambiguous
+            b'R' => b'Y', // AG <-> CT
+            b'Y' => b'R', // CT <-> AG
+            b'S' => b'S', // GC
+            b'W' => b'W', // AT
+            b'K' => b'M', // GT <-> AC
+            b'M' => b'K', // AC <-> GT
+            b'B' => b'V', // CGT <-> ACG
+            b'D' => b'H', // AGT <-> ACT
+            b'H' => b'D', // ACT <-> AGT
+            b'V' => b'B', // ACG <-> CGT
+            b'N' => b'N', //
+
+            _ => panic!("Invalid nucleotide {}", *nt as char),
         })
         .collect();
 
