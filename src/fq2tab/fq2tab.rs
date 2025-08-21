@@ -89,6 +89,7 @@ pub fn fastq_fq2tab(fastq: Option<PathBuf>, outfile: Option<PathBuf>) -> Result<
         writer.write_all(b"\n").map_err(|_| AppError::FastqError)?;
     }
 
+    // Always remember to flush.
     writer.flush().map_err(|_| AppError::FastqError)?;
 
     #[cfg(feature = "plot")]

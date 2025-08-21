@@ -2,10 +2,11 @@ use crate::common::AppError;
 use crate::common::{bio_fastq_reader, general_bufwriter, reverse_complement};
 use bio::pattern_matching::myers::MyersBuilder;
 use rayon::prelude::*;
-use std::fs::File;
-use std::io::BufReader;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
+
+#[cfg(feature = "plot")]
+use crate::trim::generate_plots;
 
 // Allow for ambiguous nucleotide matches.
 #[inline]
@@ -60,7 +61,7 @@ pub fn fastq_trim(
 
     // Tsv writer (to file).
     let tsv_writer = Arc::new(Mutex::new(
-        general_bufwriter(Some(barcodes_tsv)).map_err(|_| AppError::FastqError)?,
+        general_bufwriter(Some(barcodes_tsv.clone())).map_err(|_| AppError::FastqError)?,
     ));
 
     // If not supplied, empty vec means no iterating.
@@ -75,6 +76,15 @@ pub fn fastq_trim(
                 .collect()
         })
         .unwrap_or(vec![]);
+
+    // Writer tsv header
+    {
+        let mut s = tsv_writer.lock().unwrap();
+        s.write(
+            b"read_name\tlength_before\tlength_after\ttrimmed\tbarcode_forward\tbarcode_reverse\n",
+        )
+        .unwrap();
+    }
 
     reader.records().par_bridge().for_each(|record| {
         let record = match record {
@@ -182,11 +192,25 @@ pub fn fastq_trim(
         s.write(b"\t").unwrap();
         s.write(trimmed.to_string().as_bytes()).unwrap();
         s.write(b"\t").unwrap();
-        found_barcode_forward.map(|b| s.write(b).unwrap());
+        // forward barcode.
+        let bf = found_barcode_forward.unwrap_or(b"N/A");
+        s.write(bf).unwrap();
         s.write(b"\t").unwrap();
-        found_barcode_reverse.map(|b| s.write(b).unwrap());
+        // reverse barcode.
+        let br = found_barcode_reverse.unwrap_or(b"N/A");
+        s.write(br).unwrap();
         s.write(b"\n").unwrap();
     });
+
+    // ALWAYS remember to flush, otherwise you might spending hrs debugging...
+    let mut tsv_writer = Arc::into_inner(tsv_writer).unwrap().into_inner().unwrap();
+    tsv_writer.flush().unwrap();
+
+    let mut fastq_writer = Arc::into_inner(fastq_writer).unwrap().into_inner().unwrap();
+    fastq_writer.flush().unwrap();
+
+    #[cfg(feature = "plot")]
+    generate_plots(&barcodes_tsv);
 
     Ok(())
 }
