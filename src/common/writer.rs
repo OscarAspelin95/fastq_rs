@@ -18,10 +18,15 @@ pub fn write_json<T: Serialize>(outfile: Option<PathBuf>, s: T) -> Result<(), Ap
 pub fn general_bufwriter(outfile: Option<PathBuf>) -> Result<Box<dyn Write + Send>, AppError> {
     match outfile {
         Some(outfile) => {
-            let f = File::create(outfile).map_err(|_| AppError::FastqError)?;
-            let writer = BufWriter::new(f);
+            let f = File::create(&outfile).map_err(|_| AppError::FastqError)?;
 
-            Ok(Box::new(writer))
+            let writer = match outfile.ends_with("gz") {
+                true => Box::new(BufWriter::new(GzEncoder::new(f, Compression::best())))
+                    as Box<dyn Write + Send>,
+                false => Box::new(BufWriter::new(f)) as Box<dyn Write + Send>,
+            };
+
+            Ok(writer)
         }
         None => {
             let writer = BufWriter::new(std::io::stdout());
