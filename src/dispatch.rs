@@ -3,6 +3,7 @@ use crate::filter::fastq_filter;
 use crate::fq2fa::fastq_fq2fa;
 use crate::fq2tab::fastq_fq2tab;
 use crate::head::fastq_head;
+use crate::mock::fastq_mock;
 use crate::sample::fastq_sample;
 use crate::sanitize::fastq_sanitize;
 use crate::sort::fastq_sort;
@@ -89,5 +90,17 @@ pub fn dispatch(args: App) {
         SubCommand::Fq2Fa { fastq, outfile } => fastq_fq2fa(fastq, outfile).unwrap(),
         SubCommand::Fq2Tab { fastq, outfile } => fastq_fq2tab(fastq, outfile).unwrap(),
         SubCommand::Sample { fastq, by, outfile } => fastq_sample(fastq, by, outfile).unwrap(),
+        SubCommand::Mock {
+            num_reads,
+            min_len,
+            max_len,
+            phred,
+            prefix_seq,
+            suffix_seq,
+            outfile,
+        } => fastq_mock(
+            num_reads, min_len, max_len, phred, prefix_seq, suffix_seq, outfile,
+        )
+        .unwrap(),
     }
 }

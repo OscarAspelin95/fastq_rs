@@ -168,4 +168,26 @@ pub enum SubCommand {
         #[clap(short, long, default_value = "barcodes.tsv")]
         barcodes_tsv: PathBuf,
     },
+    Mock {
+        #[clap(short, long, default_value_t = 10)]
+        num_reads: usize,
+
+        #[clap(long, default_value_t = 1)]
+        min_len: usize,
+
+        #[clap(long, default_value_t = 10)]
+        max_len: usize,
+
+        #[clap(long, default_value_t = 30)]
+        phred: u8,
+
+        #[clap(long)]
+        prefix_seq: Option<String>,
+
+        #[clap(long)]
+        suffix_seq: Option<String>,
+
+        #[clap(short, long)]
+        outfile: Option<PathBuf>,
+    },
 }

@@ -8,6 +8,7 @@ mod filter;
 mod fq2fa;
 mod fq2tab;
 mod head;
+mod mock;
 mod sample;
 mod sanitize;
 mod sort;
