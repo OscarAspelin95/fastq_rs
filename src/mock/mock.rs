@@ -76,5 +76,7 @@ pub fn fastq_mock(
         writer.write_all(b"\n").unwrap();
     }
 
+    writer.flush().unwrap();
+
     Ok(())
 }

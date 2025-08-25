@@ -20,10 +20,16 @@ pub fn general_bufwriter(outfile: Option<PathBuf>) -> Result<Box<dyn Write + Sen
         Some(outfile) => {
             let f = File::create(&outfile).map_err(|_| AppError::FastqError)?;
 
-            let writer = match outfile.ends_with("gz") {
-                true => Box::new(BufWriter::new(GzEncoder::new(f, Compression::best())))
+            let extension = outfile
+                .extension()
+                .expect("Outfile is missing extension.")
+                .to_str()
+                .unwrap();
+
+            let writer = match extension {
+                "gz" => Box::new(BufWriter::new(GzEncoder::new(f, Compression::fast())))
                     as Box<dyn Write + Send>,
-                false => Box::new(BufWriter::new(f)) as Box<dyn Write + Send>,
+                _ => Box::new(BufWriter::new(f)) as Box<dyn Write + Send>,
             };
 
             Ok(writer)
