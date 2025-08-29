@@ -24,7 +24,6 @@ Run with:<br>
 `fastq_rs <subcommand> <args>`<br>
 
 ## ToDo
-- [ ] Improve error handling and add more error types.
 - [ ] Improve fastq_rs mock by sampling read length from exp dist, qual from normal dist.
 
 ## Subcommands

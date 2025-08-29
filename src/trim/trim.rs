@@ -210,10 +210,10 @@ pub fn fastq_trim(
 
     // ALWAYS remember to flush, otherwise you might spending hrs debugging...
     let mut tsv_writer = Arc::into_inner(tsv_writer).unwrap().into_inner().unwrap();
-    tsv_writer.flush().unwrap();
+    tsv_writer.flush()?;
 
     let mut fastq_writer = Arc::into_inner(fastq_writer).unwrap().into_inner().unwrap();
-    fastq_writer.flush().unwrap();
+    fastq_writer.flush()?;
 
     #[cfg(feature = "plot")]
     generate_plots(&barcodes_tsv);
