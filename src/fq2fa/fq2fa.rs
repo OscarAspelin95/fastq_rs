@@ -1,12 +1,12 @@
-use crate::common::AppError;
 use crate::common::general_bufwriter;
 use crate::common::needletail_fastq_reader;
+use anyhow::Result;
 
 use std::path::PathBuf;
 
-pub fn fastq_fq2fa(fastq: Option<PathBuf>, outfile: Option<PathBuf>) -> Result<(), AppError> {
-    let mut reader = needletail_fastq_reader(fastq).map_err(|_| AppError::FastqError)?;
-    let mut writer = general_bufwriter(outfile).map_err(|_| AppError::FastqError)?;
+pub fn fastq_fq2fa(fastq: Option<PathBuf>, outfile: Option<PathBuf>) -> Result<()> {
+    let mut reader = needletail_fastq_reader(fastq)?;
+    let mut writer = general_bufwriter(outfile)?;
 
     while let Some(record) = reader.next() {
         let record = match record {
@@ -15,22 +15,16 @@ pub fn fastq_fq2fa(fastq: Option<PathBuf>, outfile: Option<PathBuf>) -> Result<(
         };
 
         // Read id.
-        writer.write_all(b">").map_err(|_| AppError::FastqError)?;
-        writer
-            .write_all(&record.id())
-            .map_err(|_| AppError::FastqError)?;
-
-        writer.write_all(b"\n").map_err(|_| AppError::FastqError)?;
+        writer.write_all(b">")?;
+        writer.write_all(&record.id())?;
+        writer.write_all(b"\n")?;
 
         // Read sequence.
-        writer
-            .write_all(&record.seq())
-            .map_err(|_| AppError::FastqError)?;
-
-        writer.write_all(b"\n").map_err(|_| AppError::FastqError)?;
+        writer.write_all(&record.seq())?;
+        writer.write_all(b"\n")?;
     }
 
-    writer.flush().map_err(|_| AppError::FastqError)?;
+    writer.flush()?;
 
     Ok(())
 }

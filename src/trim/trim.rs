@@ -1,5 +1,5 @@
-use crate::common::AppError;
 use crate::common::{bio_fastq_reader, general_bufwriter, reverse_complement};
+use anyhow::Result;
 use bio::pattern_matching::myers::MyersBuilder;
 use rayon::prelude::*;
 use std::path::PathBuf;
@@ -52,17 +52,13 @@ pub fn fastq_trim(
     barcode_margin: usize,
     outfile: Option<PathBuf>,
     barcodes_tsv: PathBuf,
-) -> Result<(), AppError> {
+) -> Result<()> {
     // Fastq reader/writer.
-    let reader = bio_fastq_reader(fastq).map_err(|_| AppError::FastqError)?;
-    let fastq_writer = Arc::new(Mutex::new(
-        general_bufwriter(outfile).map_err(|_| AppError::FastqError)?,
-    ));
+    let reader = bio_fastq_reader(fastq)?;
+    let fastq_writer = Arc::new(Mutex::new(general_bufwriter(outfile)?));
 
     // Tsv writer (to file).
-    let tsv_writer = Arc::new(Mutex::new(
-        general_bufwriter(Some(barcodes_tsv.clone())).map_err(|_| AppError::FastqError)?,
-    ));
+    let tsv_writer = Arc::new(Mutex::new(general_bufwriter(Some(barcodes_tsv.clone()))?));
 
     // If not supplied, empty vec means no iterating.
     let barcodes_start: Vec<String> = barcodes_forward.unwrap_or(vec![]);
@@ -184,19 +180,29 @@ pub fn fastq_trim(
         }
 
         let mut s = tsv_writer.lock().unwrap();
+
+        // Id.
         s.write(record.id().as_bytes()).unwrap();
         s.write(b"\t").unwrap();
+
+        // Length before.
         s.write(record.seq().len().to_string().as_bytes()).unwrap();
         s.write(b"\t").unwrap();
+
+        // Length after.
         s.write(seq.len().to_string().as_bytes()).unwrap();
         s.write(b"\t").unwrap();
+
+        // Was trimmed?
         s.write(trimmed.to_string().as_bytes()).unwrap();
         s.write(b"\t").unwrap();
-        // forward barcode.
+
+        // Forward barcode.
         let bf = found_barcode_forward.unwrap_or(b"N/A");
         s.write(bf).unwrap();
         s.write(b"\t").unwrap();
-        // reverse barcode.
+
+        // Reverse barcode.
         let br = found_barcode_reverse.unwrap_or(b"N/A");
         s.write(br).unwrap();
         s.write(b"\n").unwrap();

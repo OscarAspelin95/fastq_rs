@@ -1,8 +1,7 @@
 use crate::common::utils::error_to_phred;
 use crate::common::{bio_fastq_reader, mean_error_and_phred, mean_len, write_json};
 
-use crate::common::AppError;
-
+use anyhow::Result;
 use log::error;
 use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -22,8 +21,8 @@ struct FastqStats {
     longest: Option<Vec<usize>>,
 }
 
-pub fn fastq_stats(fastq: Option<PathBuf>, outfile: Option<PathBuf>) -> Result<(), AppError> {
-    let reader = bio_fastq_reader(fastq).map_err(|_| AppError::FastqError)?;
+pub fn fastq_stats(fastq: Option<PathBuf>, outfile: Option<PathBuf>) -> Result<()> {
+    let reader = bio_fastq_reader(fastq)?;
 
     // Initialize thread safe variables.
     let num_reads = AtomicUsize::new(0);

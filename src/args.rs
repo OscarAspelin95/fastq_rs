@@ -131,7 +131,12 @@ pub enum SubCommand {
         #[clap(short, long)]
         fastq: Option<PathBuf>,
 
-        #[clap(short, long, default_value_t = 1.0)]
+        #[clap(
+            short,
+            long,
+            default_value_t = 1.0,
+            help = "Values <= 1.0 means by fraction. Otherwise, samples by number of reads."
+        )]
         by: f32,
 
         #[clap(short, long)]

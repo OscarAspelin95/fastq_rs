@@ -32,6 +32,5 @@ pub fn replace_extension(f: &PathBuf, suffix: Option<&str>, extension: &str) -> 
     f_dir.push(f_base);
 
     let f_new_extension = f_dir.with_extension(extension);
-
     return f_new_extension;
 }
