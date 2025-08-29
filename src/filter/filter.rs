@@ -1,5 +1,6 @@
-use crate::common::{AppError, mean_error_and_phred, nucleotide_counts};
 use crate::common::{general_bufwriter, needletail_fastq_reader};
+use crate::common::{mean_error_and_phred, nucleotide_counts};
+use anyhow::Result;
 use std::path::PathBuf;
 
 pub fn fastq_filter(
@@ -13,9 +14,9 @@ pub fn fastq_filter(
     min_ambiguous: usize,
     max_ambiguous: usize,
     outfile: Option<PathBuf>,
-) -> Result<(), AppError> {
-    let mut reader = needletail_fastq_reader(fastq).map_err(|_| AppError::FastqError)?;
-    let mut writer = general_bufwriter(outfile).map_err(|_| AppError::FastqError)?;
+) -> Result<()> {
+    let mut reader = needletail_fastq_reader(fastq)?;
+    let mut writer = general_bufwriter(outfile)?;
 
     while let Some(record) = reader.next() {
         let record = match record {
@@ -24,7 +25,7 @@ pub fn fastq_filter(
         };
 
         let record_seq = record.seq();
-        let record_qual = record.qual().expect("Missing fastq quality.");
+        let record_qual = record.qual().expect("No quality in record"); // Make this better.
 
         // Early return for too short/long reads.
         let record_len = record_seq.len();
@@ -47,9 +48,7 @@ pub fn fastq_filter(
             continue;
         }
 
-        record
-            .write(&mut writer, None)
-            .map_err(|_| AppError::FastqError)?;
+        record.write(&mut writer, None)?;
     }
 
     Ok(())

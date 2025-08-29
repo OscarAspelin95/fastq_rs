@@ -1,7 +1,7 @@
-use crate::common::AppError;
 use crate::common::general_bufwriter;
 use crate::common::mean_error_and_phred;
 use crate::common::needletail_fastq_reader;
+use anyhow::Result;
 use std::path::PathBuf;
 
 #[cfg(feature = "plot")]
@@ -35,13 +35,11 @@ fn generate_plots(outfile: Option<PathBuf>) {
     );
 }
 
-pub fn fastq_fq2tab(fastq: Option<PathBuf>, outfile: Option<PathBuf>) -> Result<(), AppError> {
-    let mut reader = needletail_fastq_reader(fastq).map_err(|_| AppError::FastqError)?;
-    let mut writer = general_bufwriter(outfile.clone()).map_err(|_| AppError::FastqError)?;
+pub fn fastq_fq2tab(fastq: Option<PathBuf>, outfile: Option<PathBuf>) -> Result<()> {
+    let mut reader = needletail_fastq_reader(fastq)?;
+    let mut writer = general_bufwriter(outfile.clone())?;
 
-    writer
-        .write_all(b"read_id\tread_length\tread_error\tread_phred\n")
-        .map_err(|_| AppError::FastqError)?;
+    writer.write_all(b"read_id\tread_length\tread_error\tread_phred\n")?;
 
     while let Some(record) = reader.next() {
         let record = match record {
@@ -59,38 +57,25 @@ pub fn fastq_fq2tab(fastq: Option<PathBuf>, outfile: Option<PathBuf>) -> Result<
         let (mean_read_error, mean_read_phred) = mean_error_and_phred(&record_qual);
 
         // Read id.
-        writer
-            .write_all(&record.id())
-            .map_err(|_| AppError::FastqError)?;
-
-        writer.write_all(b"\t").map_err(|_| AppError::FastqError)?;
+        writer.write_all(&record.id())?;
+        writer.write_all(b"\t")?;
 
         // Read length.
-        writer
-            .write_all(record_seq.len().to_string().as_bytes())
-            .map_err(|_| AppError::FastqError)?;
-
-        writer.write_all(b"\t").map_err(|_| AppError::FastqError)?;
+        writer.write_all(record_seq.len().to_string().as_bytes())?;
+        writer.write_all(b"\t")?;
 
         // Read error
-        writer
-            .write_all(mean_read_error.to_string().as_bytes())
-            .map_err(|_| AppError::FastqError)?;
-
-        writer.write_all(b"\t").map_err(|_| AppError::FastqError)?;
+        writer.write_all(mean_read_error.to_string().as_bytes())?;
+        writer.write_all(b"\t")?;
 
         // Read phred
-        writer
-            .write_all(mean_read_phred.to_string().as_bytes())
-            .map_err(|_| AppError::FastqError)?;
-
-        writer.write_all(b"\t").map_err(|_| AppError::FastqError)?;
-
-        writer.write_all(b"\n").map_err(|_| AppError::FastqError)?;
+        writer.write_all(mean_read_phred.to_string().as_bytes())?;
+        writer.write_all(b"\t")?;
+        writer.write_all(b"\n")?;
     }
 
     // Always remember to flush.
-    writer.flush().map_err(|_| AppError::FastqError)?;
+    writer.flush()?;
 
     #[cfg(feature = "plot")]
     generate_plots(outfile);

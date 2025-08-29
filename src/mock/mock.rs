@@ -1,5 +1,5 @@
-use crate::common::AppError;
 use crate::common::general_bufwriter;
+use anyhow::Result;
 use rand::{prelude::*, random_range, rng};
 use std::path::PathBuf;
 
@@ -23,8 +23,8 @@ pub fn fastq_mock(
     prefix_seq: Option<String>,
     suffix_seq: Option<String>,
     outfile: Option<PathBuf>,
-) -> Result<(), AppError> {
-    let mut writer = general_bufwriter(outfile).map_err(|_| AppError::FastqError)?;
+) -> Result<()> {
+    let mut writer = general_bufwriter(outfile)?;
     // +33 offset is the default.
     let actual_phred = phred + 33;
 
@@ -67,8 +67,8 @@ pub fn fastq_mock(
             .as_ref()
             .map(|s| writer.write_all(s.as_bytes()).unwrap());
         writer.write_all(b"\n").unwrap();
-
         writer.write_all(b"+\n").unwrap();
+
         // Qual
         prefix_qual.as_ref().map(|q| writer.write_all(q).unwrap());
         writer.write_all(&qual).unwrap();

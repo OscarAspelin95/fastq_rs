@@ -1,16 +1,13 @@
 use crate::common::AppError;
 use crate::common::{bio_fastq_reader, bio_fastq_writer};
+use anyhow::Result;
 use bio::io::fastq::Record;
 use rand::{prelude::*, rng};
 use std::path::PathBuf;
 
-pub fn fastq_sample(
-    fastq: Option<PathBuf>,
-    by: f32,
-    outfile: Option<PathBuf>,
-) -> Result<(), AppError> {
-    let reader = bio_fastq_reader(fastq).map_err(|_| AppError::FastqError)?;
-    let mut writer = bio_fastq_writer(outfile).map_err(|_| AppError::FastqError)?;
+pub fn fastq_sample(fastq: Option<PathBuf>, by: f32, outfile: Option<PathBuf>) -> Result<()> {
+    let reader = bio_fastq_reader(fastq)?;
+    let mut writer = bio_fastq_writer(outfile)?;
 
     let records: Vec<Record> = reader
         .records()
@@ -22,7 +19,7 @@ pub fn fastq_sample(
 
     // Check for valid sampling metric.
     if by <= 0.0 {
-        return Err(AppError::FastqError);
+        return Err(AppError::InvalidSamplingError(by).into());
     }
 
     let sample_by = match by <= 1.0 {
@@ -39,7 +36,7 @@ pub fn fastq_sample(
     let sample = records.choose_multiple(&mut rng, sample_by);
 
     for r in sample {
-        writer.write_record(r).map_err(|_| AppError::FastqError)?;
+        writer.write_record(r)?;
     }
 
     Ok(())
