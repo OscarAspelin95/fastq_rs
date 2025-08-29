@@ -76,7 +76,7 @@ pub fn fastq_sort(
         writer.write_record(&record)?;
     }
 
-    writer.flush().expect("Failed to flush buffer.");
+    writer.flush()?;
 
     Ok(())
 }

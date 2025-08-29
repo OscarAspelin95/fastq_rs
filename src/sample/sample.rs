@@ -39,5 +39,7 @@ pub fn fastq_sample(fastq: Option<PathBuf>, by: f32, outfile: Option<PathBuf>) -
         writer.write_record(r)?;
     }
 
+    writer.flush()?;
+
     Ok(())
 }
