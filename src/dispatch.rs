@@ -1,7 +1,9 @@
 use crate::args::{App, SubCommand};
+use crate::concat::fastq_concat;
 use crate::filter::fastq_filter;
 use crate::fq2fa::fastq_fq2fa;
 use crate::fq2tab::fastq_fq2tab;
+use crate::grep::fastq_grep;
 use crate::head::fastq_head;
 use crate::mock::fastq_mock;
 use crate::sample::fastq_sample;
@@ -19,6 +21,12 @@ pub fn dispatch(args: App) {
             num_reads,
             outfile,
         } => fastq_head(fastq, num_reads, outfile).unwrap(),
+        SubCommand::Grep {
+            fastq,
+            pattern,
+            outfile,
+        } => fastq_grep(fastq, pattern, outfile).unwrap(),
+        SubCommand::Concat { fastqs, outfile } => fastq_concat(fastqs, outfile).unwrap(),
         SubCommand::Filter {
             fastq,
             min_len,

@@ -57,6 +57,23 @@ pub enum SubCommand {
         #[clap(short, long)]
         outfile: Option<PathBuf>,
     },
+    Grep {
+        #[clap(short, long)]
+        fastq: Option<PathBuf>,
+
+        #[clap(short, long)]
+        pattern: String,
+
+        #[clap(short, long)]
+        outfile: Option<PathBuf>,
+    },
+    Concat {
+        #[clap(short, long, value_delimiter = ' ', num_args = 1..)]
+        fastqs: Vec<PathBuf>,
+
+        #[clap(short, long)]
+        outfile: Option<PathBuf>,
+    },
     Filter {
         #[clap(short, long)]
         fastq: Option<PathBuf>,

@@ -4,9 +4,11 @@ use simple_logger::SimpleLogger;
 
 mod args;
 mod common;
+mod concat;
 mod filter;
 mod fq2fa;
 mod fq2tab;
+mod grep;
 mod head;
 mod mock;
 mod sample;

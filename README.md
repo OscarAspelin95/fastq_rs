@@ -25,6 +25,10 @@ Run with:<br>
 
 ## ToDo
 - [ ] Improve fastq_rs mock by sampling read length from exp dist, qual from normal dist.
+- [ ] Add fastq_rs grep to search for record ids with regex.
+- [ ] Add fastq_rs shuffle.
+- [ ] Add fastq_rs deduplicate to remove records with identical names.
+- [ ] Add fastq_rs rename to rename records with identicasl names.
 
 ## Subcommands
 🔴 Not implemented yet (but planning to).<br>
@@ -62,6 +66,26 @@ Optional arguments:
 <pre>
 <b>-n/--num-seqs</b> [5] - Number of reads to output.
 
+<b>-o/--outfile</b> [stdout] - Output file.
+</pre>
+
+### fastq_rs `grep`
+🟢 Search and filter read ids by regular expressions.
+
+`fastq_rs grep --fastq <reads.fastq.gz> --pattern <regex_string> <optional_args>`
+
+Optional arguments:
+<pre>
+<b>-o/--outfile</b> [stdout] - Output file.
+</pre>
+
+### fastq_rs `concat`
+🟢 Sanitize and concat fastq files. This feature is probably slower than using normal bash commands like `zcat *.fastq.gz | pigs -f > concat.fastq.gz`, but has the advantage of skipping malformatted records.
+
+`fastq_rs concat --fastqs <reads.fastq.gz> <...> <optional_args>`
+
+Optional arguments:
+<pre>
 <b>-o/--outfile</b> [stdout] - Output file.
 </pre>
 
