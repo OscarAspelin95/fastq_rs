@@ -1,5 +1,5 @@
 # fastq_rs
-🚧 Work in progress fastq toolkit, aiming to an alternative to [seqkit](https://github.com/shenwei356/seqkit/).
+Fastq toolkit, aiming to an alternative to [seqkit](https://github.com/shenwei356/seqkit/).
 
 ## Requirements
 - Linux OS (Ubuntu 24.04.2)
