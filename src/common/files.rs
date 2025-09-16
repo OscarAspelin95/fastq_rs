@@ -1,5 +1,7 @@
+#[cfg(feature = "plot")]
 use std::path::PathBuf;
 
+#[cfg(feature = "plot")]
 fn get_basename(p: &PathBuf) -> Option<String> {
     // basename with extension.
     let f_base = p
@@ -16,6 +18,7 @@ fn get_basename(p: &PathBuf) -> Option<String> {
     }
 }
 
+#[cfg(feature = "plot")]
 pub fn replace_extension(f: &PathBuf, suffix: Option<&str>, extension: &str) -> PathBuf {
     let mut f_dir = f
         .parent()
