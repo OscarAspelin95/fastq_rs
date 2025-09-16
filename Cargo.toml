@@ -9,6 +9,13 @@ repository = "https://github.com/OscarAspelin95/fastq_rs"
 keywords = ["bioinformatics", "fastq"]
 categories = ["command-line-utilities"]
 
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+name = "fastq_rs"
+path = "src/main.rs"
+
 [features]
 plot = ["dep:polars", "dep:plotlars"]
 
