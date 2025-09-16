@@ -2,6 +2,12 @@
 name = "fastq_rs"
 version = "0.0.1"
 edition = "2024"
+authors = ["oscar.aspelin@gmail.com"]
+description = ""
+license = "Apache-2.0"
+repository = "https://github.com/OscarAspelin95/fastq_rs"
+keywords = ["bioinformatics", "fastq"]
+categories = ["command-line-utilities"]
 
 [features]
 plot = ["dep:polars", "dep:plotlars"]
