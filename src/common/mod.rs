@@ -4,7 +4,6 @@ pub use utils::{
 };
 
 pub mod files;
-pub use files::replace_extension;
 
 pub mod errors;
 pub use errors::AppError;
