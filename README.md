@@ -23,13 +23,6 @@ Plots will be automatically generated to applicable subcommands.
 Run with:<br>
 `fastq_rs <subcommand> <args>`<br>
 
-## ToDo
-- [ ] Improve fastq_rs mock by sampling read length from exp dist, qual from normal dist.
-- [ ] Add fastq_rs grep to search for record ids with regex.
-- [ ] Add fastq_rs shuffle.
-- [ ] Add fastq_rs deduplicate to remove records with identical names.
-- [ ] Add fastq_rs rename to rename records with identicasl names.
-
 ## Subcommands
 🔴 Not implemented yet (but planning to).<br>
 🟡 Implemented but not tested/fully featured.<br>
