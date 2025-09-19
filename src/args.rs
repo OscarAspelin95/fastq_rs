@@ -10,6 +10,7 @@ pub enum SortType {
 }
 
 #[derive(Debug, Parser)]
+#[command(version, about = "General purpose fastq toolkit.", long_about = None)]
 pub struct App {
     #[clap(subcommand)]
     pub command: SubCommand,
