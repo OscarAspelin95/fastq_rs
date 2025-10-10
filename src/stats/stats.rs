@@ -11,17 +11,24 @@ use std::sync::atomic::Ordering::Relaxed;
 use std::sync::{Arc, Mutex};
 
 #[derive(Serialize, Deserialize)]
-struct FastqStats {
-    num_reads: usize,
-    num_bases: usize,
-    mean_error: f64,
-    mean_phred: u8,
-    mean_len: usize,
-    shortest: Option<Vec<usize>>,
-    longest: Option<Vec<usize>>,
+pub struct FastqStats {
+    pub num_reads: usize,
+    pub num_bases: usize,
+    pub mean_error: f64,
+    pub mean_phred: u8,
+    pub mean_len: usize,
+    pub shortest: Option<Vec<usize>>,
+    pub longest: Option<Vec<usize>>,
 }
 
-pub fn fastq_stats(fastq: Option<PathBuf>, outfile: Option<PathBuf>) -> Result<()> {
+/// # Arguments
+/// * `fastq` - Path to FASTQ file (optional, defaults to stdin).
+/// * `outfile` - Where to write results (optional, defaults to stdout).
+///
+/// # Returns
+/// * `Ok(FastqStats)` if successful.
+/// * `Err` if not.
+pub fn fastq_stats(fastq: Option<PathBuf>, outfile: Option<PathBuf>) -> Result<(FastqStats)> {
     let reader = bio_fastq_reader(fastq)?;
 
     // Initialize thread safe variables.
@@ -82,5 +89,5 @@ pub fn fastq_stats(fastq: Option<PathBuf>, outfile: Option<PathBuf>) -> Result<(
     // Write json to output file.
     write_json(outfile, &fastq_stats)?;
 
-    Ok(())
+    Ok(fastq_stats)
 }

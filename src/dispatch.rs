@@ -14,7 +14,9 @@ use fastq_rs::trim::fastq_trim;
 
 pub fn dispatch(args: App) {
     match args.command {
-        SubCommand::Stats { fastq, outfile } => fastq_stats(fastq, outfile).unwrap(),
+        SubCommand::Stats { fastq, outfile } => {
+            let _ = fastq_stats(fastq, outfile).unwrap();
+        }
         SubCommand::Sanitize { fastq, outfile } => fastq_sanitize(fastq, outfile).unwrap(),
         SubCommand::Head {
             fastq,
