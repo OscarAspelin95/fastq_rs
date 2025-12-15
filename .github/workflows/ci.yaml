@@ -79,7 +79,7 @@ jobs:
           target: ${{ matrix.target}}
           checksum: sha256
           archive: $bin-$tag-$target
-          manifest_path: my_rust_project/Cargo.toml
+          manifest_path: Cargo.toml
 
       # Here, we'd also like to publish to crates.io
       # Publish to crates.io
@@ -87,4 +87,4 @@ jobs:
       #   uses: rust-lang/crates-io-action@v1
       #   with:
       #     token: ${{ secrets.CRATES_IO_TOKEN }}
-      #     package: my_rust_project
+      #     package: fastq_rs

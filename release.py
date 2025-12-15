@@ -90,11 +90,19 @@ def main(
         log.info("Running in dry mode, skipping release.")
         return
 
+    match input(
+        "Confirm Cargo.toml and Cargo.lock updates have been committed (y/n):"
+    ).lower():
+        case "y":
+            pass
+        case _:
+            exit(1)
+
     match input(f"Confirm release {ver} (y/n):").lower():
         case "y":
             create_and_push_tag(ver)
         case _:
-            raise ValueError("Release aborted")
+            exit(1)
 
 
 def check_directory(rust_directory: str | None) -> Path:
