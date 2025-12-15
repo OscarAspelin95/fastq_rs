@@ -3,8 +3,6 @@ pub use utils::{
     PHRED_TO_ERROR, mean_error_and_phred, mean_len, nucleotide_counts, reverse_complement,
 };
 
-pub mod files;
-
 pub mod errors;
 pub use errors::AppError;
 

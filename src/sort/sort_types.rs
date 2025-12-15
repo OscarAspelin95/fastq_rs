@@ -12,10 +12,10 @@ fn get_minimizers(seq: &[u8], kmer_size: usize, window_size: usize) -> Vec<(u64,
         .minimizer_size(kmer_size)
         .width(window_size as u16)
         .iter(seq)
-        .map(|(mm_seq, mm_pos, _)| return (mm_seq, mm_pos))
+        .map(|(mm_seq, mm_pos, _)| (mm_seq, mm_pos))
         .collect();
 
-    return m_iter;
+    m_iter
 }
 
 #[inline]
@@ -26,7 +26,7 @@ fn is_significant_minimizer(mm_qual: &[u8], max_err: f64) -> bool {
         err *= PHRED_TO_ERROR[*mm_phred as usize];
     });
 
-    return err < max_err;
+    err < max_err
 }
 
 fn get_num_significant_minimizers(
@@ -36,7 +36,7 @@ fn get_num_significant_minimizers(
     kmer_size: usize,
     max_minimizer_error: f64,
 ) -> usize {
-    let mms = get_minimizers(&seq, kmer_size, window_size);
+    let mms = get_minimizers(seq, kmer_size, window_size);
 
     let mut num_significant: usize = 0;
     // Each minimizer in the read.
@@ -44,12 +44,12 @@ fn get_num_significant_minimizers(
         // Extract quality slice from minimizer position.
         let mm_qual = &qual[mm_pos..mm_pos + kmer_size];
 
-        if is_significant_minimizer(&mm_qual, max_minimizer_error) {
+        if is_significant_minimizer(mm_qual, max_minimizer_error) {
             num_significant += 1;
         }
     }
 
-    return num_significant;
+    num_significant
 }
 
 #[inline]
@@ -88,26 +88,26 @@ pub struct Minimizer {
 
 impl Minimizer {
     fn required_read_len(&self) -> usize {
-        return self.window_size + self.kmer_size - 1;
+        self.window_size + self.kmer_size - 1
     }
 }
 
 impl Score for GcContent {
     fn score(&self, seq: &[u8], _qual: &[u8]) -> f64 {
-        return gc_content(seq);
+        gc_content(seq)
     }
 }
 
 impl Score for ReadLength {
     fn score(&self, seq: &[u8], _qual: &[u8]) -> f64 {
-        return seq.len() as f64;
+        seq.len() as f64
     }
 }
 
 impl Score for ReadError {
     fn score(&self, _seq: &[u8], qual: &[u8]) -> f64 {
         let (mean_error, _) = mean_error_and_phred(qual);
-        return mean_error;
+        mean_error
     }
 }
 
@@ -123,12 +123,12 @@ impl Score for Minimizer {
             return 0.0_f64;
         }
 
-        return get_num_significant_minimizers(
+        get_num_significant_minimizers(
             seq,
             qual,
             self.window_size,
             self.kmer_size,
             self.max_minimizer_error,
-        ) as f64;
+        ) as f64
     }
 }

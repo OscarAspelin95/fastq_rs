@@ -11,10 +11,7 @@ pub fn fastq_sample(fastq: Option<PathBuf>, by: f32, outfile: Option<PathBuf>) -
 
     let records: Vec<Record> = reader
         .records()
-        .filter_map(|record| match record {
-            Ok(record) => Some(record),
-            Err(_) => None,
-        })
+        .filter_map(|record| record.ok())
         .collect();
 
     // Check for valid sampling metric.

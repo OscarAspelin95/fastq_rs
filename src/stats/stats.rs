@@ -28,7 +28,7 @@ pub struct FastqStats {
 /// # Returns
 /// * `Ok(FastqStats)` if successful.
 /// * `Err` if not.
-pub fn fastq_stats(fastq: Option<PathBuf>, outfile: Option<PathBuf>) -> Result<(FastqStats)> {
+pub fn fastq_stats(fastq: Option<PathBuf>, outfile: Option<PathBuf>) -> Result<FastqStats> {
     let reader = bio_fastq_reader(fastq)?;
 
     // Initialize thread safe variables.
@@ -49,7 +49,7 @@ pub fn fastq_stats(fastq: Option<PathBuf>, outfile: Option<PathBuf>) -> Result<(
         let record_len: usize = record.seq().len();
 
         // Read error.
-        let (mean_error, _) = mean_error_and_phred(&record.qual());
+        let (mean_error, _) = mean_error_and_phred(record.qual());
 
         num_reads.fetch_add(1, Relaxed);
         num_bases.fetch_add(record_len, Relaxed);
@@ -77,13 +77,11 @@ pub fn fastq_stats(fastq: Option<PathBuf>, outfile: Option<PathBuf>) -> Result<(
         num_bases: num_bases.into_inner(),
         mean_error: mean_mean_error,
         mean_phred: mean_mean_phred,
-        mean_len: mean_len,
+        mean_len,
         shortest: read_lengths
-            .first_chunk::<5>()
-            .and_then(|c| Some(c.to_vec())),
+            .first_chunk::<5>().map(|c| c.to_vec()),
         longest: read_lengths
-            .last_chunk::<5>()
-            .and_then(|c| Some(c.to_vec())),
+            .last_chunk::<5>().map(|c| c.to_vec()),
     };
 
     // Write json to output file.

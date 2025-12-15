@@ -22,12 +22,10 @@ pub fn fastq_sort(
     fastq: Option<PathBuf>,
     by: &SortType,
     reverse: bool,
-    // Minimizer specific arguments.
     window_size: usize,
     kmer_size: usize,
     max_read_error: f64,
     max_minimizer_error: f64,
-    //
     outfile: Option<PathBuf>,
 ) -> Result<()> {
     let reader = bio_fastq_reader(fastq)?;
@@ -44,10 +42,10 @@ pub fn fastq_sort(
         SortType::Gc => Box::new(GcContent {}),
         SortType::MeanError => Box::new(ReadError {}),
         SortType::Minimizer => Box::new(Minimizer {
-            window_size: window_size,
-            kmer_size: kmer_size,
-            max_minimizer_error: max_minimizer_error,
-            max_read_error: max_read_error,
+            window_size,
+            kmer_size,
+            max_minimizer_error,
+            max_read_error,
         }),
     };
 
@@ -62,9 +60,9 @@ pub fn fastq_sort(
                 }
             };
 
-            let score = metric.score(&record.seq(), &record.qual());
+            let score = metric.score(record.seq(), record.qual());
 
-            return Some((score, record));
+            Some((score, record))
         })
         .collect();
 

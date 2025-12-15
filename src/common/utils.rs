@@ -7,7 +7,7 @@ lazy_static! {
 
         for i in 0..126 {
             if i >= 33 {
-                error_lookup[i] = 10_f64.powf(-1.0 * ((i - 33) as f64) / 10.0);
+                error_lookup[i] = 10_f64.powf(-((i - 33) as f64) / 10.0);
             };
         }
 
@@ -17,7 +17,7 @@ lazy_static! {
 
 #[inline]
 pub fn error_to_phred(error: f64) -> u8 {
-    return (-10_f64 * error.log10()) as u8;
+    (-10_f64 * error.log10()) as u8
 }
 
 #[inline]
@@ -25,17 +25,17 @@ pub fn mean_error_and_phred(qual: &[u8]) -> (f64, u8) {
     let error_sum: f64 = qual
         .iter()
         .map(|phred| {
-            return PHRED_TO_ERROR[*phred as usize];
+            PHRED_TO_ERROR[*phred as usize]
         })
         .sum::<f64>();
 
     let error_mean = error_sum / qual.len() as f64;
-    return (error_mean, error_to_phred(error_mean));
+    (error_mean, error_to_phred(error_mean))
 }
 
 #[inline]
 pub fn mean_len(lengths: &[usize]) -> usize {
-    return lengths.iter().sum::<usize>() / lengths.len();
+    lengths.iter().sum::<usize>() / lengths.len()
 }
 
 #[inline]
@@ -68,7 +68,7 @@ pub fn nucleotide_counts(seq: &[u8]) -> (HashMap<&u8, usize>, usize, usize) {
         }
     }
 
-    return (canonical, softmasked_count, ambiguous_count);
+    (canonical, softmasked_count, ambiguous_count)
 }
 
 #[inline]
@@ -99,5 +99,5 @@ pub fn reverse_complement(seq: &[u8]) -> Vec<u8> {
         })
         .collect();
 
-    return reverse_complement;
+    reverse_complement
 }
