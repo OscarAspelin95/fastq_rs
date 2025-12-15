@@ -2,10 +2,12 @@ use crate::common::{bio_fastq_reader, general_bufwriter, reverse_complement};
 use anyhow::Result;
 use bio::pattern_matching::myers::MyersBuilder;
 use rayon::prelude::*;
+use rstest::rstest;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 
 // Allow for ambiguous nucleotide matches.
+// We should probably build this once and reuse of possible.
 #[inline]
 fn myers_builder(primer_seq: &[u8]) -> bio::pattern_matching::myers::Myers {
     MyersBuilder::new()
@@ -110,8 +112,8 @@ pub fn fastq_trim(
             match forward_start {
                 None => continue,
                 Some(forward_start) => {
-                    seq = &seq[forward_start + barcode_len..];
-                    qual = &qual[forward_start + barcode_len..];
+                    seq = &seq[forward_start + 1..];
+                    qual = &qual[forward_start + 1..];
                     found_barcode_forward = Some(barcode_forward.as_bytes());
                     trimmed = true;
 
@@ -214,4 +216,18 @@ pub fn fastq_trim(
     fastq_writer.flush()?;
 
     Ok(())
+}
+
+#[rstest]
+#[case(b"AATTTTAA", b"TTTT", 0, Some(5))]
+#[case(b"TTTTTTTTTTTTTTT", b"AAAAAA", 0, None)]
+#[case(b"TTTTTTGGAGGTTTTTTT", b"GGGGG", 1, Some(10))]
+fn test_fuzzy_match(
+    #[case] seq: &[u8],
+    #[case] barcode: &[u8],
+    #[case] max_mismatches: u8,
+    #[case] expected_match_start: Option<usize>,
+) {
+    let result = find_fuzzy(seq, barcode, max_mismatches);
+    assert_eq!(result, expected_match_start);
 }
