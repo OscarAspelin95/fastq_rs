@@ -1,2 +1,2 @@
 pub mod stats;
-pub use stats::{fastq_stats, FastqStats};
+pub use stats::{FastqStats, fastq_stats};

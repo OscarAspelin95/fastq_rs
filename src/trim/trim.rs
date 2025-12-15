@@ -5,13 +5,10 @@ use rayon::prelude::*;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 
-#[cfg(feature = "plot")]
-use crate::trim::generate_plots;
-
 // Allow for ambiguous nucleotide matches.
 #[inline]
 fn myers_builder(primer_seq: &[u8]) -> bio::pattern_matching::myers::Myers {
-    return MyersBuilder::new()
+    MyersBuilder::new()
         .ambig(b'N', b"ACGT")
         .ambig(b'R', b"AG")
         .ambig(b'Y', b"CT")
@@ -23,10 +20,10 @@ fn myers_builder(primer_seq: &[u8]) -> bio::pattern_matching::myers::Myers {
         .ambig(b'D', b"AGT")
         .ambig(b'H', b"ACT")
         .ambig(b'V', b"ACG")
-        .build_64(primer_seq);
+        .build_64(primer_seq)
 }
 
-fn find_fuzzy<'a>(seq: &[u8], barcode: &'a [u8], max_mismatches: u8) -> Option<usize> {
+fn find_fuzzy(seq: &[u8], barcode: &[u8], max_mismatches: u8) -> Option<usize> {
     let myers = myers_builder(barcode);
 
     let (start, num_mismatches) = myers.find_best_end(seq);
@@ -35,7 +32,7 @@ fn find_fuzzy<'a>(seq: &[u8], barcode: &'a [u8], max_mismatches: u8) -> Option<u
         return Some(start);
     }
 
-    return None;
+    None
 }
 
 /// I'm not happy with the multi-thread implementation with
@@ -61,7 +58,7 @@ pub fn fastq_trim(
     let tsv_writer = Arc::new(Mutex::new(general_bufwriter(Some(barcodes_tsv.clone()))?));
 
     // If not supplied, empty vec means no iterating.
-    let barcodes_start: Vec<String> = barcodes_forward.unwrap_or(vec![]);
+    let barcodes_start: Vec<String> = barcodes_forward.unwrap_or_default();
 
     // For reverse barcodes, we need to first reverse complement.
     let barcodes_end: Vec<String> = barcodes_reverse
@@ -71,12 +68,12 @@ pub fn fastq_trim(
                 .map(|s| String::from_utf8(reverse_complement(s.as_bytes())).unwrap())
                 .collect()
         })
-        .unwrap_or(vec![]);
+        .unwrap_or_default();
 
     // Writer tsv header
     {
         let mut s = tsv_writer.lock().unwrap();
-        s.write(
+        s.write_all(
             b"read_name\tlength_before\tlength_after\ttrimmed\tbarcode_forward\tbarcode_reverse\n",
         )
         .unwrap();
@@ -169,43 +166,44 @@ pub fn fastq_trim(
 
         if seq.len() >= min_len {
             let mut w = fastq_writer.lock().unwrap();
-            w.write(b"@").unwrap();
-            w.write(record.id().as_bytes()).unwrap();
-            w.write(b"\n").unwrap();
-            w.write(seq).unwrap();
-            w.write(b"\n").unwrap();
-            w.write(b"+\n").unwrap();
-            w.write(qual).unwrap();
-            w.write(b"\n").unwrap();
+            w.write_all(b"@").unwrap();
+            w.write_all(record.id().as_bytes()).unwrap();
+            w.write_all(b"\n").unwrap();
+            w.write_all(seq).unwrap();
+            w.write_all(b"\n").unwrap();
+            w.write_all(b"+\n").unwrap();
+            w.write_all(qual).unwrap();
+            w.write_all(b"\n").unwrap();
         }
 
         let mut s = tsv_writer.lock().unwrap();
 
         // Id.
-        s.write(record.id().as_bytes()).unwrap();
-        s.write(b"\t").unwrap();
+        s.write_all(record.id().as_bytes()).unwrap();
+        s.write_all(b"\t").unwrap();
 
         // Length before.
-        s.write(record.seq().len().to_string().as_bytes()).unwrap();
-        s.write(b"\t").unwrap();
+        s.write_all(record.seq().len().to_string().as_bytes())
+            .unwrap();
+        s.write_all(b"\t").unwrap();
 
         // Length after.
-        s.write(seq.len().to_string().as_bytes()).unwrap();
-        s.write(b"\t").unwrap();
+        s.write_all(seq.len().to_string().as_bytes()).unwrap();
+        s.write_all(b"\t").unwrap();
 
         // Was trimmed?
-        s.write(trimmed.to_string().as_bytes()).unwrap();
-        s.write(b"\t").unwrap();
+        s.write_all(trimmed.to_string().as_bytes()).unwrap();
+        s.write_all(b"\t").unwrap();
 
         // Forward barcode.
         let bf = found_barcode_forward.unwrap_or(b"N/A");
-        s.write(bf).unwrap();
-        s.write(b"\t").unwrap();
+        s.write_all(bf).unwrap();
+        s.write_all(b"\t").unwrap();
 
         // Reverse barcode.
         let br = found_barcode_reverse.unwrap_or(b"N/A");
-        s.write(br).unwrap();
-        s.write(b"\n").unwrap();
+        s.write_all(br).unwrap();
+        s.write_all(b"\n").unwrap();
     });
 
     // ALWAYS remember to flush, otherwise you might spending hrs debugging...
@@ -214,9 +212,6 @@ pub fn fastq_trim(
 
     let mut fastq_writer = Arc::into_inner(fastq_writer).unwrap().into_inner().unwrap();
     fastq_writer.flush()?;
-
-    #[cfg(feature = "plot")]
-    generate_plots(&barcodes_tsv);
 
     Ok(())
 }

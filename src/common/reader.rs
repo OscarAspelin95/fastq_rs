@@ -32,7 +32,7 @@ fn validate_fastq(fastq: &PathBuf) -> Result<(&PathBuf, FastqType), AppError> {
         return Ok((fastq, FastqType::Gzip));
     }
 
-    return Err(AppError::InvalidFileExtension(fastq.to_owned()));
+    Err(AppError::InvalidFileExtension(fastq.to_owned()))
 }
 
 /// Bio does not automatically detect gzip, so we need to handle this manually.
@@ -54,11 +54,7 @@ pub fn bio_fastq_reader(fastq: Option<PathBuf>) -> Result<Reader<BufReader<Box<d
         }
 
         // If stdin, we assume plain fastq. No gzip stream allowed.
-        None => {
-            let reader = Box::new(std::io::stdin());
-
-            reader
-        }
+        None => Box::new(std::io::stdin()),
     };
 
     Ok(Reader::new(reader))
@@ -75,5 +71,5 @@ pub fn needletail_fastq_reader(fastq: Option<PathBuf>) -> Result<Box<dyn FastxRe
         None => parse_fastx_stdin()?,
     };
 
-    return Ok(reader);
+    Ok(reader)
 }

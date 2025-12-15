@@ -1,5 +1,5 @@
 use clap::{Args, Parser, Subcommand, ValueEnum};
-use std::{path::PathBuf, usize};
+use std::path::PathBuf;
 
 #[derive(Debug, Clone, ValueEnum)]
 pub enum SortType {

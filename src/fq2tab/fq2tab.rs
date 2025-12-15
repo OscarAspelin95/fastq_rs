@@ -4,37 +4,6 @@ use crate::common::needletail_fastq_reader;
 use anyhow::Result;
 use std::path::PathBuf;
 
-#[cfg(feature = "plot")]
-fn generate_plots(outfile: Option<PathBuf>) {
-    use crate::common::replace_extension;
-    use crate::fq2tab::plot::{PlotType, plot, tsv_to_df};
-
-    let read_tsv = match outfile {
-        Some(read_tsv) => read_tsv,
-        None => return,
-    };
-
-    let df = tsv_to_df(&read_tsv);
-
-    plot(
-        &df,
-        PlotType::ReadBox,
-        &replace_extension(&read_tsv, Some("box"), "html"),
-    );
-
-    plot(
-        &df,
-        PlotType::ReadHist,
-        &replace_extension(&read_tsv, Some("hist"), "html"),
-    );
-
-    plot(
-        &df,
-        PlotType::ReadContour,
-        &replace_extension(&read_tsv, Some("contour"), "html"),
-    );
-}
-
 pub fn fastq_fq2tab(fastq: Option<PathBuf>, outfile: Option<PathBuf>) -> Result<()> {
     let mut reader = needletail_fastq_reader(fastq)?;
     let mut writer = general_bufwriter(outfile.clone())?;
@@ -54,10 +23,10 @@ pub fn fastq_fq2tab(fastq: Option<PathBuf>, outfile: Option<PathBuf>) -> Result<
 
         let record_seq = record.seq();
 
-        let (mean_read_error, mean_read_phred) = mean_error_and_phred(&record_qual);
+        let (mean_read_error, mean_read_phred) = mean_error_and_phred(record_qual);
 
         // Read id.
-        writer.write_all(&record.id())?;
+        writer.write_all(record.id())?;
         writer.write_all(b"\t")?;
 
         // Read length.
@@ -76,9 +45,6 @@ pub fn fastq_fq2tab(fastq: Option<PathBuf>, outfile: Option<PathBuf>) -> Result<
 
     // Always remember to flush.
     writer.flush()?;
-
-    #[cfg(feature = "plot")]
-    generate_plots(outfile);
 
     Ok(())
 }

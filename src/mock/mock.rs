@@ -59,20 +59,24 @@ pub fn fastq_mock(
         writer.write_all(b"\n").unwrap();
 
         // Sequence
-        prefix_seq
-            .as_ref()
-            .map(|s| writer.write_all(s.as_bytes()).unwrap());
+        if let Some(s) = prefix_seq.as_ref() {
+            writer.write_all(s.as_bytes()).unwrap()
+        }
         writer.write_all(&seq).unwrap();
-        suffix_seq
-            .as_ref()
-            .map(|s| writer.write_all(s.as_bytes()).unwrap());
+        if let Some(s) = suffix_seq.as_ref() {
+            writer.write_all(s.as_bytes()).unwrap()
+        }
         writer.write_all(b"\n").unwrap();
         writer.write_all(b"+\n").unwrap();
 
         // Qual
-        prefix_qual.as_ref().map(|q| writer.write_all(q).unwrap());
+        if let Some(q) = prefix_qual.as_ref() {
+            writer.write_all(q).unwrap()
+        }
         writer.write_all(&qual).unwrap();
-        suffix_qual.as_ref().map(|q| writer.write_all(q).unwrap());
+        if let Some(q) = suffix_qual.as_ref() {
+            writer.write_all(q).unwrap()
+        }
         writer.write_all(b"\n").unwrap();
     }
 
