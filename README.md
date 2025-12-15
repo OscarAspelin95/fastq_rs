@@ -1,35 +1,25 @@
 # fastq_rs
-Fastq toolkit, aiming to an alternative to [seqkit](https://github.com/shenwei356/seqkit/).
+Fastq cli toolkit, aiming to an alternative to [seqkit](https://github.com/shenwei356/seqkit/).
 
 ## Requirements
 - Linux OS (Ubuntu 24.04.2)
-- Rust >= 1.88.0
+- Rust >= 1.90.0
 
-## Installation
+## 
+
+## Install from source
 Clone the repository or download the source code. Enter the fastq_rs directory and run:<br>
 
 `cargo build --release`
 
 The generated binary is available in `target/release/fastq_rs`.
 
-## Plots
-To enable plotting, compile with the `plot` feature.<br>
-
-`cargo build --release --features plot`<br>
-
-Plots will be automatically generated to applicable subcommands.
-
 ## Usage
 Run with:<br>
 `fastq_rs <subcommand> <args>`<br>
 
-## Subcommands
-🔴 Not implemented yet (but planning to).<br>
-🟡 Implemented but not tested/fully featured.<br>
-🟢 Beta-mode available!
-
 ### fastq_rs `stats`
-🟢 Calculate basic stats.
+Calculate basic stats.
 
 `fastq_rs stats --fastq <reads.fastq.gz> <optional_args>`
 
@@ -41,7 +31,7 @@ Optional arguments:
 </pre>
 
 ### fastq_rs `sanitize`
-🟢 Attempt to sanitize malformatted reads.
+Attempt to sanitize malformatted reads.
 
 `fastq_rs sanitize --fastq <reads.fastq.gz> <optional_args>`
 
@@ -51,7 +41,7 @@ Optional arguments:
 </pre>
 
 ### fastq_rs `head`
-🟢 Output the first `n` reads.
+Output the first `n` reads.
 
 `fastq_rs head --fastq <reads.fastq.gz> <optional_args>`
 
@@ -63,7 +53,7 @@ Optional arguments:
 </pre>
 
 ### fastq_rs `grep`
-🟢 Search and filter read ids by regular expressions.
+Search and filter read ids by regular expressions.
 
 `fastq_rs grep --fastq <reads.fastq.gz> --pattern <regex_string> <optional_args>`
 
@@ -73,7 +63,7 @@ Optional arguments:
 </pre>
 
 ### fastq_rs `concat`
-🟢 Sanitize and concat fastq files. This feature is probably slower than using normal bash commands like `zcat *.fastq.gz | pigs -f > concat.fastq.gz`, but has the advantage of skipping malformatted records.
+Sanitize and concat fastq files. This feature is probably slower than using normal bash commands like `zcat *.fastq.gz | pigs -f > concat.fastq.gz`, but has the advantage of skipping malformatted records.
 
 `fastq_rs concat --fastqs <reads.fastq.gz> <...> <optional_args>`
 
@@ -83,7 +73,7 @@ Optional arguments:
 </pre>
 
 ### fastq_rs `sort`
-🟢 Sort reads based on provided metric.
+Sort reads based on provided metric.
 
 `fastq_rs sort --fastq <reads.fastq.gz> <optional_args>`
 
@@ -106,7 +96,7 @@ Optional arguments:
 </pre>
 
 ### fastq_rs `fq2-fa`
-🟢 Convert FASTQ to FASTA.
+Convert FASTQ to FASTA.
 
 `fastq_rs fq2-fa --fastq <reads.fastq.gz> <optional_args>`
 
@@ -116,7 +106,7 @@ Optional arguments:
 </pre>
 
 ### fastq_rs `fq2-tab`
-🟢 Convert FASTQ to a .tsv file with information about each read. If compiled with the `plot` feature, will generate a read scatter and boxplot.
+Convert FASTQ to a .tsv file with information about each read. If compiled with the `plot` feature, will generate a read scatter and boxplot.
 
 `fastq_rs fq2-tab --fastq <reads.fastq.gz> <optional_args>`
 
@@ -127,7 +117,7 @@ Optional arguments:
 
 
 ### fastq_rs `filter`
-🟢 Filter reads.
+Filter reads.
 
 `fastq_rs filter --fastq <reads.fastq.gz> <optional_args>`
 
@@ -153,7 +143,7 @@ Optional arguments:
 </pre>
 
 ### fastq_rs `sample`
-🟢 Sample reads by fraction or number of reads.
+Sample reads by fraction or number of reads.
 
 `fastq_rs sample --fastq <reads.fastq.gz> <optional_args>`
 
@@ -165,7 +155,7 @@ Optional arguments:
 </pre>
 
 ### fastq_rs `trim`
-🟢 Trim reads through fuzzy search with ambiguous nucleotide support.
+Trim reads through fuzzy search with ambiguous nucleotide support.
 
 `fastq_rs trim --fastq <reads.fastq.gz> <optional_args>`
 

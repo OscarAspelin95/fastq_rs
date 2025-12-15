@@ -117,6 +117,36 @@ pub fn reverse_complement(seq: &[u8]) -> Vec<u8> {
     reverse_complement
 }
 
+#[inline]
+pub fn gc_content(seq: &[u8]) -> f64 {
+    let mut num_bases: usize = 0;
+    let mut gc_count: usize = 0;
+
+    for nt in seq {
+        num_bases += 1;
+
+        if nt == &b'G' || nt == &b'C' || nt == &b'g' || nt == &b'c' {
+            gc_count += 1;
+        };
+    }
+
+    match gc_count {
+        0 => 0.0,
+        _ => gc_count as f64 / num_bases as f64,
+    }
+}
+
+#[rstest]
+#[case(b"", 0.0_f64)]
+#[case(b"A", 0.0_f64)]
+#[case(b"G", 1.0_f64)]
+#[case(b"ATCG", 0.5_f64)]
+#[case(b"AATTC", 1.0_f64 / 5.0_f64)]
+#[case(b"AAAAAAG", 1.0_f64 / 7.0_f64)]
+fn test_gc_content(#[case] seq: &[u8], #[case] expected: f64) {
+    assert_eq!(gc_content(seq), expected);
+}
+
 #[rstest]
 #[case(30 + PHRED_OFFSET, 0.001)]
 #[case(40 + PHRED_OFFSET, 0.0001)]

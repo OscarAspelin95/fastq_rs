@@ -1,4 +1,4 @@
-use crate::common::{PHRED_TO_ERROR, mean_error_and_phred};
+use crate::common::{PHRED_TO_ERROR, gc_content, mean_error_and_phred};
 use minimizer_iter::MinimizerBuilder;
 
 #[inline]
@@ -50,25 +50,6 @@ fn get_num_significant_minimizers(
     }
 
     num_significant
-}
-
-#[inline]
-pub fn gc_content(seq: &[u8]) -> f64 {
-    let mut num_bases: usize = 0;
-    let mut gc_count: usize = 0;
-
-    for nt in seq {
-        num_bases += 1;
-
-        if nt == &b'G' || nt == &b'C' || nt == &b'g' || nt == &b'c' {
-            gc_count += 1;
-        };
-    }
-
-    match gc_count {
-        0 => 0.0,
-        _ => gc_count as f64 / num_bases as f64,
-    }
 }
 
 pub trait Score: Send + Sync {

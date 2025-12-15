@@ -164,25 +164,25 @@ pub enum SubCommand {
         #[clap(short, long)]
         fastq: Option<PathBuf>,
 
-        #[clap(short, long, default_value_t = 0)]
+        #[clap(long, default_value_t = 0)]
         min_len: usize,
 
-        #[clap(short, long, default_value_t = 0)]
+        #[clap(long, default_value_t = 0)]
         trim_start: usize,
 
-        #[clap(short, long, default_value_t = 0)]
+        #[clap(long, default_value_t = 0)]
         trim_end: usize,
 
-        #[clap(short, long, required = false, value_delimiter = ' ')]
+        #[clap(long, required = false, value_delimiter = ' ')]
         barcode_forward: Option<Vec<String>>,
 
-        #[clap(short, long, required = false, value_delimiter = ' ')]
+        #[clap(long, required = false, value_delimiter = ' ')]
         barcode_reverse: Option<Vec<String>>,
 
-        #[clap(short, long, default_value_t = 2)]
+        #[clap(long, default_value_t = 2)]
         max_mismatches: u8,
 
-        #[clap(short, long, default_value_t = 10)]
+        #[clap(long, default_value_t = 10)]
         barcode_margin: usize,
 
         #[clap(short, long)]
