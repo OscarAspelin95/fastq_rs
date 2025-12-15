@@ -81,10 +81,8 @@ jobs:
           archive: $bin-$tag-$target
           manifest_path: Cargo.toml
 
-      # Here, we'd also like to publish to crates.io
-      # Publish to crates.io
-      # - name: Publish to crates.io
-      #   uses: rust-lang/crates-io-action@v1
-      #   with:
-      #     token: ${{ secrets.CRATES_IO_TOKEN }}
-      #     package: fastq_rs
+      - name: Publish to crates.io
+        uses: rust-lang/crates-io-action@v1
+        with:
+          token: ${{ secrets.CRATES_IO_TOKEN }}
+          package: fastq_rs
