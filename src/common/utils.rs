@@ -40,7 +40,7 @@ pub fn mean_error_and_phred(qual: &[u8]) -> (f64, u8) {
 
 #[inline]
 pub fn mean_len(lengths: &[usize]) -> usize {
-    if lengths.len() == 0 {
+    if lengths.is_empty() {
         return 0;
     }
 
@@ -49,7 +49,7 @@ pub fn mean_len(lengths: &[usize]) -> usize {
 
 #[inline]
 pub fn nucleotide_counts(seq: &[u8]) -> (HashMap<&u8, usize>, usize, usize) {
-    if seq.len() == 0 {
+    if seq.is_empty() {
         return (HashMap::new(), 0, 0);
     }
 
