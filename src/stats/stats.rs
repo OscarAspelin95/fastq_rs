@@ -78,10 +78,8 @@ pub fn fastq_stats(fastq: Option<PathBuf>, outfile: Option<PathBuf>) -> Result<F
         mean_error: mean_mean_error,
         mean_phred: mean_mean_phred,
         mean_len,
-        shortest: read_lengths
-            .first_chunk::<5>().map(|c| c.to_vec()),
-        longest: read_lengths
-            .last_chunk::<5>().map(|c| c.to_vec()),
+        shortest: read_lengths.first_chunk::<5>().map(|c| c.to_vec()),
+        longest: read_lengths.last_chunk::<5>().map(|c| c.to_vec()),
     };
 
     // Write json to output file.

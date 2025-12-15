@@ -54,11 +54,7 @@ pub fn bio_fastq_reader(fastq: Option<PathBuf>) -> Result<Reader<BufReader<Box<d
         }
 
         // If stdin, we assume plain fastq. No gzip stream allowed.
-        None => {
-            
-
-            Box::new(std::io::stdin())
-        }
+        None => Box::new(std::io::stdin()),
     };
 
     Ok(Reader::new(reader))

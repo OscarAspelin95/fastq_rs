@@ -9,10 +9,7 @@ pub fn fastq_sample(fastq: Option<PathBuf>, by: f32, outfile: Option<PathBuf>) -
     let reader = bio_fastq_reader(fastq)?;
     let mut writer = bio_fastq_writer(outfile)?;
 
-    let records: Vec<Record> = reader
-        .records()
-        .filter_map(|record| record.ok())
-        .collect();
+    let records: Vec<Record> = reader.records().filter_map(|record| record.ok()).collect();
 
     // Check for valid sampling metric.
     if by <= 0.0 {
