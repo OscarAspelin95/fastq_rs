@@ -1,10 +1,11 @@
+use crate::common::AppError;
 use crate::common::general_bufwriter;
 use crate::common::mean_error_and_phred;
 use crate::common::needletail_fastq_reader;
 use anyhow::Result;
 use std::path::PathBuf;
 
-pub fn fastq_fq2tab(fastq: Option<PathBuf>, outfile: Option<PathBuf>) -> Result<()> {
+pub fn fastq_fq2tab(fastq: Option<PathBuf>, outfile: Option<PathBuf>) -> Result<(), AppError> {
     let mut reader = needletail_fastq_reader(fastq)?;
     let mut writer = general_bufwriter(outfile.clone())?;
 

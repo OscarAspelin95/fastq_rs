@@ -1,4 +1,4 @@
-use crate::common::{bio_fastq_reader, general_bufwriter, reverse_complement};
+use crate::common::{AppError, bio_fastq_reader, general_bufwriter, reverse_complement};
 use anyhow::Result;
 use bio::pattern_matching::myers::MyersBuilder;
 use rayon::prelude::*;
@@ -51,7 +51,7 @@ pub fn fastq_trim(
     barcode_margin: usize,
     outfile: Option<PathBuf>,
     barcodes_tsv: PathBuf,
-) -> Result<()> {
+) -> Result<(), AppError> {
     // Fastq reader/writer.
     let reader = bio_fastq_reader(fastq)?;
     let fastq_writer = Arc::new(Mutex::new(general_bufwriter(outfile)?));
@@ -74,7 +74,7 @@ pub fn fastq_trim(
 
     // Writer tsv header
     {
-        let mut s = tsv_writer.lock().unwrap();
+        let mut s = tsv_writer.lock().expect("Failed to lock mutex");
         s.write_all(
             b"read_name\tlength_before\tlength_after\ttrimmed\tbarcode_forward\tbarcode_reverse\n",
         )
@@ -167,48 +167,62 @@ pub fn fastq_trim(
         qual = &qual[trim_start..qual.len() - trim_end];
 
         if seq.len() >= min_len {
-            let mut w = fastq_writer.lock().unwrap();
-            w.write_all(b"@").unwrap();
-            w.write_all(record.id().as_bytes()).unwrap();
-            w.write_all(b"\n").unwrap();
-            w.write_all(seq).unwrap();
-            w.write_all(b"\n").unwrap();
-            w.write_all(b"+\n").unwrap();
-            w.write_all(qual).unwrap();
-            w.write_all(b"\n").unwrap();
+            let mut w = fastq_writer.lock().expect("Failed to lock mutex");
+
+            let write_read = (|| -> Result<(), AppError> {
+                w.write_all(b"@")?;
+                w.write_all(record.id().as_bytes())?;
+                w.write_all(b"\n")?;
+                w.write_all(seq)?;
+                w.write_all(b"\n")?;
+                w.write_all(b"+\n")?;
+                w.write_all(qual)?;
+                w.write_all(b"\n")?;
+
+                Ok(())
+            })();
+
+            if write_read.is_err() {
+                panic!("Failed to write line: {}", write_read.unwrap_err());
+            }
         }
 
-        let mut s = tsv_writer.lock().unwrap();
+        let mut s = tsv_writer.lock().expect("Failed to lock mutex");
 
-        // Id.
-        s.write_all(record.id().as_bytes()).unwrap();
-        s.write_all(b"\t").unwrap();
+        let info_write = (|| -> Result<(), AppError> {
+            s.write_all(record.id().as_bytes())?;
+            s.write_all(b"\t")?;
 
-        // Length before.
-        s.write_all(record.seq().len().to_string().as_bytes())
-            .unwrap();
-        s.write_all(b"\t").unwrap();
+            // Length before.
+            s.write_all(record.seq().len().to_string().as_bytes())?;
+            s.write_all(b"\t")?;
 
-        // Length after.
-        s.write_all(seq.len().to_string().as_bytes()).unwrap();
-        s.write_all(b"\t").unwrap();
+            // Length after.
+            s.write_all(seq.len().to_string().as_bytes())?;
+            s.write_all(b"\t")?;
 
-        // Was trimmed?
-        s.write_all(trimmed.to_string().as_bytes()).unwrap();
-        s.write_all(b"\t").unwrap();
+            // Was trimmed?
+            s.write_all(trimmed.to_string().as_bytes())?;
+            s.write_all(b"\t")?;
 
-        // Forward barcode.
-        let bf = found_barcode_forward.unwrap_or(b"N/A");
-        s.write_all(bf).unwrap();
-        s.write_all(b"\t").unwrap();
+            // Forward barcode.
+            let bf = found_barcode_forward.unwrap_or(b"N/A");
+            s.write_all(bf)?;
+            s.write_all(b"\t")?;
 
-        // Reverse barcode.
-        let br = found_barcode_reverse.unwrap_or(b"N/A");
-        s.write_all(br).unwrap();
-        s.write_all(b"\n").unwrap();
+            // Reverse barcode.
+            let br = found_barcode_reverse.unwrap_or(b"N/A");
+            s.write_all(br)?;
+            s.write_all(b"\n")?;
+
+            Ok(())
+        })();
+
+        if info_write.is_err() {
+            panic!("Failed to write line: {}", info_write.unwrap_err());
+        }
     });
 
-    // ALWAYS remember to flush, otherwise you might spending hrs debugging...
     let mut tsv_writer = Arc::into_inner(tsv_writer).unwrap().into_inner().unwrap();
     tsv_writer.flush()?;
 

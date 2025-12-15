@@ -1,4 +1,4 @@
-use crate::common::{general_bufwriter, needletail_fastq_reader};
+use crate::common::{AppError, general_bufwriter, needletail_fastq_reader};
 use crate::common::{mean_error_and_phred, nucleotide_counts};
 use anyhow::Result;
 use std::path::PathBuf;
@@ -14,7 +14,7 @@ pub fn fastq_filter(
     min_ambiguous: usize,
     max_ambiguous: usize,
     outfile: Option<PathBuf>,
-) -> Result<()> {
+) -> Result<(), AppError> {
     let mut reader = needletail_fastq_reader(fastq)?;
     let mut writer = general_bufwriter(outfile)?;
 

@@ -1,8 +1,8 @@
-use crate::common::{general_bufwriter, needletail_fastq_reader};
+use crate::common::{AppError, general_bufwriter, needletail_fastq_reader};
 use anyhow::Result;
 use std::path::PathBuf;
 
-pub fn fastq_sanitize(fastq: Option<PathBuf>, outfile: Option<PathBuf>) -> Result<()> {
+pub fn fastq_sanitize(fastq: Option<PathBuf>, outfile: Option<PathBuf>) -> Result<(), AppError> {
     let mut reader = needletail_fastq_reader(fastq)?;
     let mut writer = general_bufwriter(outfile)?;
 

@@ -1,4 +1,6 @@
+use anyhow::Result;
 use fastq_rs::args::{App, SubCommand};
+use fastq_rs::common::AppError;
 use fastq_rs::concat::fastq_concat;
 use fastq_rs::filter::fastq_filter;
 use fastq_rs::fq2fa::fastq_fq2fa;
@@ -12,23 +14,23 @@ use fastq_rs::sort::fastq_sort;
 use fastq_rs::stats::fastq_stats;
 use fastq_rs::trim::fastq_trim;
 
-pub fn dispatch(args: App) {
+pub fn dispatch(args: App) -> Result<(), AppError> {
     match args.command {
         SubCommand::Stats { fastq, outfile } => {
-            let _ = fastq_stats(fastq, outfile).unwrap();
+            let _ = fastq_stats(fastq, outfile)?;
         }
-        SubCommand::Sanitize { fastq, outfile } => fastq_sanitize(fastq, outfile).unwrap(),
+        SubCommand::Sanitize { fastq, outfile } => fastq_sanitize(fastq, outfile)?,
         SubCommand::Head {
             fastq,
             num_reads,
             outfile,
-        } => fastq_head(fastq, num_reads, outfile).unwrap(),
+        } => fastq_head(fastq, num_reads, outfile)?,
         SubCommand::Grep {
             fastq,
             pattern,
             outfile,
-        } => fastq_grep(fastq, pattern, outfile).unwrap(),
-        SubCommand::Concat { fastqs, outfile } => fastq_concat(fastqs, outfile).unwrap(),
+        } => fastq_grep(fastq, pattern, outfile)?,
+        SubCommand::Concat { fastqs, outfile } => fastq_concat(fastqs, outfile)?,
         SubCommand::Filter {
             fastq,
             min_len,
@@ -51,8 +53,7 @@ pub fn dispatch(args: App) {
             min_ambiguous,
             max_ambiguous,
             outfile,
-        )
-        .unwrap(),
+        )?,
         SubCommand::Trim {
             fastq,
             min_len,
@@ -75,8 +76,7 @@ pub fn dispatch(args: App) {
             barcode_margin,
             outfile,
             barcodes_tsv,
-        )
-        .unwrap(),
+        )?,
         SubCommand::Sort {
             fastq,
             by,
@@ -95,11 +95,10 @@ pub fn dispatch(args: App) {
             max_read_error,
             max_minimizer_error,
             outfile,
-        )
-        .unwrap(),
-        SubCommand::Fq2Fa { fastq, outfile } => fastq_fq2fa(fastq, outfile).unwrap(),
-        SubCommand::Fq2Tab { fastq, outfile } => fastq_fq2tab(fastq, outfile).unwrap(),
-        SubCommand::Sample { fastq, by, outfile } => fastq_sample(fastq, by, outfile).unwrap(),
+        )?,
+        SubCommand::Fq2Fa { fastq, outfile } => fastq_fq2fa(fastq, outfile)?,
+        SubCommand::Fq2Tab { fastq, outfile } => fastq_fq2tab(fastq, outfile)?,
+        SubCommand::Sample { fastq, by, outfile } => fastq_sample(fastq, by, outfile)?,
         SubCommand::Mock {
             num_reads,
             min_len,
@@ -110,7 +109,8 @@ pub fn dispatch(args: App) {
             outfile,
         } => fastq_mock(
             num_reads, min_len, max_len, phred, prefix_seq, suffix_seq, outfile,
-        )
-        .unwrap(),
+        )?,
     }
+
+    Ok(())
 }

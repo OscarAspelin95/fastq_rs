@@ -1,5 +1,5 @@
 use crate::args::SortType;
-use crate::common::{bio_fastq_reader, bio_fastq_writer};
+use crate::common::{AppError, bio_fastq_reader, bio_fastq_writer};
 use crate::sort::{GcContent, Minimizer, ReadError, ReadLength, Score};
 
 use anyhow::Result;
@@ -10,7 +10,7 @@ use std::path::PathBuf;
 
 #[inline]
 fn check_reverse(a: f64, b: f64, reverse: bool) -> Ordering {
-    let ordering = a.partial_cmp(&b).expect("");
+    let ordering = a.partial_cmp(&b).expect("Cannot order input values");
 
     match reverse {
         false => ordering,
@@ -27,7 +27,7 @@ pub fn fastq_sort(
     max_read_error: f64,
     max_minimizer_error: f64,
     outfile: Option<PathBuf>,
-) -> Result<()> {
+) -> Result<(), AppError> {
     let reader = bio_fastq_reader(fastq)?;
 
     // Window size cannot be even, because Minimizer builder
