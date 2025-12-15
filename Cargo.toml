@@ -23,7 +23,7 @@ rayon = { version = "1.11.0" }
 clap = { version = "4.5.39", features = ["derive"] }
 log = { version = "0.4.27" }
 serde = { version = "1.0.219", features = ["derive"] }
-serde_json = { version = "1.0.141" }
+serde_json = { version = "1.0.145" }
 simple_logger = { version = "5.1.0" }
 flate2 = { version = "1.1.1" }
 thiserror = { version = "2.0.12" }
