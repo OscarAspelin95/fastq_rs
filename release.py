@@ -58,7 +58,9 @@ def create_and_push_tag(ver: Version) -> None:
     git("push", "origin", tag)
 
 
-def main(version: str, bump_type: BumpType, rust_directory: Path, dry_run: bool) -> None:
+def main(
+    version: str, bump_type: BumpType, rust_directory: Path, dry_run: bool
+) -> None:
     cargo_toml_version, package_name = get_cargo_toml_package_version(rust_directory)
     cargo_lock_version = get_cargo_lock_package_version(rust_directory, package_name)
 
@@ -84,8 +86,7 @@ def main(version: str, bump_type: BumpType, rust_directory: Path, dry_run: bool)
             f"Version mismatch: [Cargo Lock Version] {cargo_lock_version} != [Cargo TOML Version] {cargo_toml_version}"
         )
 
-
-    if dry_run is False:
+    if dry_run is True:
         log.info("Running in dry mode, skipping release.")
         return
 
@@ -128,14 +129,15 @@ if __name__ == "__main__":
     parser.add_argument(
         "-d", "--directory", help="Path to Rust project directory.", required=False
     )
-    parser.add_argument("--dry_run", help = "", action="store_true")
-
+    parser.add_argument("--dry_run", help="", action="store_true")
 
     args = parser.parse_args()
 
     rust_directory = check_directory(args.directory)
     bump_type = BumpType(args.bump_type)
-    dry_run = bool(args.dry_run,)
+    dry_run = bool(
+        args.dry_run,
+    )
 
     ensure_main()
 
