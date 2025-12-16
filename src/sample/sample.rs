@@ -5,7 +5,11 @@ use bio::io::fastq::Record;
 use rand::{prelude::*, rng};
 use std::path::PathBuf;
 
-pub fn fastq_sample(fastq: Option<PathBuf>, by: f32, outfile: Option<PathBuf>) -> Result<()> {
+pub fn fastq_sample(
+    fastq: Option<PathBuf>,
+    by: f32,
+    outfile: Option<PathBuf>,
+) -> Result<(), AppError> {
     let reader = bio_fastq_reader(fastq)?;
     let mut writer = bio_fastq_writer(outfile)?;
 
@@ -13,7 +17,7 @@ pub fn fastq_sample(fastq: Option<PathBuf>, by: f32, outfile: Option<PathBuf>) -
 
     // Check for valid sampling metric.
     if by <= 0.0 {
-        return Err(AppError::InvalidSamplingError(by).into());
+        return Err(AppError::InvalidSamplingError(by));
     }
 
     let sample_by = match by <= 1.0 {

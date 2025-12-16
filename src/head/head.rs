@@ -1,4 +1,4 @@
-use crate::common::{general_bufwriter, needletail_fastq_reader};
+use crate::common::{AppError, general_bufwriter, needletail_fastq_reader};
 use anyhow::Result;
 use std::path::PathBuf;
 
@@ -6,7 +6,7 @@ pub fn fastq_head(
     fastq: Option<PathBuf>,
     num_reads: usize,
     outfile: Option<PathBuf>,
-) -> Result<()> {
+) -> Result<(), AppError> {
     let mut reader = needletail_fastq_reader(fastq)?;
     let mut writer = general_bufwriter(outfile)?;
 

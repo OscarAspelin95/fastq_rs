@@ -1,10 +1,11 @@
+use crate::common::AppError;
 use crate::common::general_bufwriter;
 use crate::common::needletail_fastq_reader;
 use anyhow::Result;
 
 use std::path::PathBuf;
 
-pub fn fastq_fq2fa(fastq: Option<PathBuf>, outfile: Option<PathBuf>) -> Result<()> {
+pub fn fastq_fq2fa(fastq: Option<PathBuf>, outfile: Option<PathBuf>) -> Result<(), AppError> {
     let mut reader = needletail_fastq_reader(fastq)?;
     let mut writer = general_bufwriter(outfile)?;
 

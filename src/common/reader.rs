@@ -35,9 +35,9 @@ fn validate_fastq(fastq: &PathBuf) -> Result<(&PathBuf, FastqType), AppError> {
     Err(AppError::InvalidFileExtension(fastq.to_owned()))
 }
 
-/// Bio does not automatically detect gzip, so we need to handle this manually.
-/// I'm not sure this is actually thread safe, potentially.
-pub fn bio_fastq_reader(fastq: Option<PathBuf>) -> Result<Reader<BufReader<Box<dyn Read + Send>>>> {
+pub fn bio_fastq_reader(
+    fastq: Option<PathBuf>,
+) -> Result<Reader<BufReader<Box<dyn Read + Send>>>, AppError> {
     let reader = match fastq {
         // If file is provided, validate and create reader based on gzip or plain.
         Some(fastq) => {
@@ -60,7 +60,7 @@ pub fn bio_fastq_reader(fastq: Option<PathBuf>) -> Result<Reader<BufReader<Box<d
     Ok(Reader::new(reader))
 }
 
-pub fn needletail_fastq_reader(fastq: Option<PathBuf>) -> Result<Box<dyn FastxReader>> {
+pub fn needletail_fastq_reader(fastq: Option<PathBuf>) -> Result<Box<dyn FastxReader>, AppError> {
     let reader = match fastq {
         Some(fastq) => {
             let (fastq_file, _) = validate_fastq(&fastq)?;

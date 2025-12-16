@@ -2,7 +2,7 @@ use lazy_static::lazy_static;
 use rstest::rstest;
 use std::collections::HashMap;
 
-const PHRED_OFFSET: usize = 33;
+pub const PHRED_OFFSET: usize = 33;
 
 lazy_static! {
     pub static ref PHRED_TO_ERROR: [f64; 126] = {

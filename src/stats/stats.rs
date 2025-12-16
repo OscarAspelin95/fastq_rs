@@ -1,5 +1,5 @@
 use crate::common::utils::error_to_phred;
-use crate::common::{bio_fastq_reader, mean_error_and_phred, mean_len, write_json};
+use crate::common::{AppError, bio_fastq_reader, mean_error_and_phred, mean_len, write_json};
 
 use anyhow::Result;
 use log::error;
@@ -28,7 +28,10 @@ pub struct FastqStats {
 /// # Returns
 /// * `Ok(FastqStats)` if successful.
 /// * `Err` if not.
-pub fn fastq_stats(fastq: Option<PathBuf>, outfile: Option<PathBuf>) -> Result<FastqStats> {
+pub fn fastq_stats(
+    fastq: Option<PathBuf>,
+    outfile: Option<PathBuf>,
+) -> Result<FastqStats, AppError> {
     let reader = bio_fastq_reader(fastq)?;
 
     // Initialize thread safe variables.

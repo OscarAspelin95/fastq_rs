@@ -1,4 +1,4 @@
-use crate::common::general_bufwriter;
+use crate::common::{AppError, general_bufwriter, utils::PHRED_OFFSET};
 use anyhow::Result;
 use rand::{prelude::*, random_range, rng};
 use std::path::PathBuf;
@@ -15,6 +15,44 @@ fn mock_fix_qual(fix: &Option<String>, actual_phred: u8) -> Option<Vec<u8>> {
     })
 }
 
+fn validate_input_arguments(
+    num_reads: usize,
+    min_len: usize,
+    max_len: usize,
+    phred: u8,
+) -> Result<(), AppError> {
+    if num_reads == 0 {
+        return Err(AppError::InvalidArgumentError(
+            "num_reads must be greater than 0".to_string(),
+        ));
+    }
+
+    if min_len == 0 {
+        return Err(AppError::InvalidArgumentError(
+            "min_len must be greater than 0".to_string(),
+        ));
+    }
+
+    if max_len == 0 {
+        return Err(AppError::InvalidArgumentError(
+            "max_len must be greater than 0".to_string(),
+        ));
+    }
+
+    if phred == 0 {
+        return Err(AppError::InvalidArgumentError(
+            "phred must be greater than 0".to_string(),
+        ));
+    }
+
+    if max_len < min_len {
+        return Err(AppError::InvalidArgumentError(
+            "max_len must be greater than min_len".to_string(),
+        ));
+    }
+
+    Ok(())
+}
 pub fn fastq_mock(
     num_reads: usize,
     min_len: usize,
@@ -23,15 +61,11 @@ pub fn fastq_mock(
     prefix_seq: Option<String>,
     suffix_seq: Option<String>,
     outfile: Option<PathBuf>,
-) -> Result<()> {
+) -> Result<(), AppError> {
     let mut writer = general_bufwriter(outfile)?;
-    // +33 offset is the default.
-    let actual_phred = phred + 33;
+    let actual_phred = phred + PHRED_OFFSET as u8;
 
-    assert!(num_reads != 0);
-    assert!(min_len != 0);
-    assert!(phred != 0);
-    assert!(max_len > min_len);
+    validate_input_arguments(num_reads, min_len, max_len, phred)?;
 
     let prefix_qual = mock_fix_qual(&prefix_seq, actual_phred);
     let suffix_qual = mock_fix_qual(&suffix_seq, actual_phred);
@@ -54,30 +88,30 @@ pub fn fastq_mock(
         assert_eq!(seq.len(), qual.len());
 
         // Read name.
-        writer.write_all(b"@read_").unwrap();
-        writer.write_all((i + 1).to_string().as_bytes()).unwrap();
-        writer.write_all(b"\n").unwrap();
+        writer.write_all(b"@read_")?;
+        writer.write_all((i + 1).to_string().as_bytes())?;
+        writer.write_all(b"\n")?;
 
         // Sequence
         if let Some(s) = prefix_seq.as_ref() {
-            writer.write_all(s.as_bytes()).unwrap()
+            writer.write_all(s.as_bytes())?
         }
-        writer.write_all(&seq).unwrap();
+        writer.write_all(&seq)?;
         if let Some(s) = suffix_seq.as_ref() {
-            writer.write_all(s.as_bytes()).unwrap()
+            writer.write_all(s.as_bytes())?
         }
-        writer.write_all(b"\n").unwrap();
-        writer.write_all(b"+\n").unwrap();
+        writer.write_all(b"\n")?;
+        writer.write_all(b"+\n")?;
 
         // Qual
         if let Some(q) = prefix_qual.as_ref() {
-            writer.write_all(q).unwrap()
+            writer.write_all(q)?
         }
-        writer.write_all(&qual).unwrap();
+        writer.write_all(&qual)?;
         if let Some(q) = suffix_qual.as_ref() {
-            writer.write_all(q).unwrap()
+            writer.write_all(q)?
         }
-        writer.write_all(b"\n").unwrap();
+        writer.write_all(b"\n")?;
     }
 
     writer.flush()?;
