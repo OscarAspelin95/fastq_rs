@@ -4,11 +4,13 @@ use std::collections::HashMap;
 
 pub const PHRED_OFFSET: usize = 33;
 
+// We should use a better approach here, which is to cap the phred score at e.g., 60.
+// This makes a smaller table and avoids calculating non-sensically low error rates.
 lazy_static! {
-    pub static ref PHRED_TO_ERROR: [f64; 126] = {
-        let mut error_lookup: [f64; 126] = [1.0; 126];
+    pub static ref PHRED_TO_ERROR: [f64; 128] = {
+        let mut error_lookup: [f64; 128] = [1.0; 128];
 
-        for i in 0..126 {
+        for i in 0..128 {
             if i >= 33 {
                 error_lookup[i] = 10_f64.powf(-((i - PHRED_OFFSET) as f64) / 10.0);
             };
