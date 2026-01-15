@@ -1,5 +1,5 @@
 use crate::common::utils::error_to_phred;
-use crate::common::{AppError, bio_fastq_reader, mean_error_and_phred, mean_len, write_json};
+use crate::common::{bio_fastq_reader, mean_error_and_phred, mean_len, write_json, AppError};
 
 use anyhow::Result;
 use log::error;
@@ -10,7 +10,7 @@ use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering::Relaxed;
 use std::sync::{Arc, Mutex};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct FastqStats {
     pub num_reads: usize,
     pub num_bases: usize,
