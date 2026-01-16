@@ -17,7 +17,7 @@ name = "fastq_rs"
 path = "src/main.rs"
 
 [dependencies]
-bio = { version = "2.3.0" }
+bio = { version = "3.0.0" }
 needletail = { version = "0.6.3", features = ["compression"] }
 rayon = { version = "1.11.0" }
 clap = { version = "4.5.54", features = ["derive"] }
