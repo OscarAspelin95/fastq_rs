@@ -1,5 +1,5 @@
 use crate::common::utils::error_to_phred;
-use crate::common::{bio_fastq_reader, mean_error_and_phred, mean_len, write_json, AppError};
+use crate::common::{AppError, bio_fastq_reader, mean_error_and_phred, mean_len, write_json};
 
 use anyhow::Result;
 use log::error;
