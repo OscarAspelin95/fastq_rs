@@ -1,11 +1,12 @@
 # fastq_rs
-Fastq cli toolkit, aiming to an alternative to [seqkit](https://github.com/shenwei356/seqkit/).
+Fastq cli toolkit, inspired by [seqkit](https://github.com/shenwei356/seqkit/).
 
 ## Requirements
 - Linux OS (Ubuntu 24.04.2)
 - Rust >= 1.90.0
 
-## 
+## Install
+The easiest way to get started is by installing a linux binary from [releases](https://github.com/OscarAspelin95/fastq_rs/releases).
 
 ## Install from source
 Clone the repository or download the source code. Enter the fastq_rs directory and run:<br>
@@ -176,5 +177,15 @@ Optional arguments:
 
 <b>--barcode-margin</b> [10] - Allow the barcode to be located at most this number of bases from the start/end of the read.
 
+<b>-o/--outfile</b> [stdout] - Output file.
+</pre>
+
+### fastq_rs `renumber`
+Anonymize/renumber read names.
+
+`fastq_rs renumber --fastq <reads.fastq.gz> <optional_args>`
+
+Optional arguments:
+<pre>
 <b>-o/--outfile</b> [stdout] - Output file.
 </pre>

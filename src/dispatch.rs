@@ -8,6 +8,7 @@ use fastq_rs::fq2tab::fastq_fq2tab;
 use fastq_rs::grep::fastq_grep;
 use fastq_rs::head::fastq_head;
 use fastq_rs::mock::fastq_mock;
+use fastq_rs::renumber::fastq_renumber;
 use fastq_rs::sample::fastq_sample;
 use fastq_rs::sanitize::fastq_sanitize;
 use fastq_rs::sort::fastq_sort;
@@ -110,6 +111,7 @@ pub fn dispatch(args: App) -> Result<(), AppError> {
         } => fastq_mock(
             num_reads, min_len, max_len, phred, prefix_seq, suffix_seq, outfile,
         )?,
+        SubCommand::Renumber { fastq, outfile } => fastq_renumber(fastq, outfile)?,
     }
 
     Ok(())

@@ -12,6 +12,7 @@ pub mod fq2tab;
 pub mod grep;
 pub mod head;
 pub mod mock;
+pub mod renumber;
 pub mod sample;
 pub mod sanitize;
 pub mod sort;
