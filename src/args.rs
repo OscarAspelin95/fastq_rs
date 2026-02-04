@@ -213,4 +213,11 @@ pub enum SubCommand {
         #[clap(short, long)]
         outfile: Option<PathBuf>,
     },
+    Renumber {
+        #[clap(short, long)]
+        fastq: Option<PathBuf>,
+
+        #[clap(short, long)]
+        outfile: Option<PathBuf>,
+    },
 }
