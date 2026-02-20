@@ -1,8 +1,6 @@
 use crate::errors::AppError;
 use bio_utils_rs::io::{bio_fastq_reader, write_json};
 use bio_utils_rs::nucleotide::{error_to_phred, mean_error_and_phred, mean_len};
-
-use anyhow::Result;
 use log::error;
 use rayon::prelude::*;
 use serde::{Deserialize, Serialize};

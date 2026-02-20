@@ -7,12 +7,12 @@ use crate::fq2tab::fastq_fq2tab;
 use crate::grep::fastq_grep;
 use crate::head::fastq_head;
 use crate::mock::fastq_mock;
+use crate::renumber::fastq_renumber;
 use crate::sample::fastq_sample;
 use crate::sanitize::fastq_sanitize;
 use crate::sort::fastq_sort;
 use crate::stats::fastq_stats;
 use crate::trim::fastq_trim;
-use anyhow::Result;
 
 pub fn dispatch(args: App) -> Result<(), AppError> {
     match args.command {

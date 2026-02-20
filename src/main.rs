@@ -13,6 +13,7 @@ mod fq2tab;
 mod grep;
 mod head;
 mod mock;
+mod renumber;
 mod sample;
 mod sanitize;
 mod sort;

@@ -1,5 +1,4 @@
 use crate::errors::AppError;
-use anyhow::Result;
 use bio::io::fastq::Record;
 use bio_utils_rs::io::{bio_fastq_reader, bio_fastq_writer};
 use rand::{prelude::*, rng};

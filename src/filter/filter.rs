@@ -1,5 +1,4 @@
 use crate::errors::AppError;
-use anyhow::Result;
 use bio_utils_rs::io::{get_bufwriter, needletail_reader};
 use bio_utils_rs::nucleotide::{mean_error_and_phred, nucleotide_counts};
 use std::path::PathBuf;

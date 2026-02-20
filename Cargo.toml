@@ -9,10 +9,6 @@ repository = "https://github.com/OscarAspelin95/fastq_rs"
 keywords = ["bioinformatics", "fastq"]
 categories = ["command-line-utilities"]
 
-[[bin]]
-name = "fastq_rs"
-path = "src/main.rs"
-
 [dependencies]
 bio = { version = "3.0.0" }
 bio_utils_rs = { version = "0.0.2", features = ["io"] }
@@ -25,7 +21,6 @@ serde_json = { version = "1.0.149" }
 simple_logger = { version = "5.1.0" }
 thiserror = { version = "2.0.18" }
 flate2 = { version = "1.1.9" }
-anyhow = { version = "1.0.100" }
 rstest = { version = "0.26.1" }
 minimizer-iter = { version = "1.2.1" }
 rand = { version = "0.9.2" }

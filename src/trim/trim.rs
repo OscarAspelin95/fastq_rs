@@ -1,5 +1,4 @@
 use crate::errors::AppError;
-use anyhow::Result;
 use bio::pattern_matching::myers::MyersBuilder;
 use bio_utils_rs::io::{bio_fastq_reader, get_bufwriter};
 use bio_utils_rs::nucleotide::reverse_complement;

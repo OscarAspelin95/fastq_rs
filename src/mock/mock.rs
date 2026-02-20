@@ -1,5 +1,4 @@
 use crate::errors::AppError;
-use anyhow::Result;
 use bio_utils_rs::io::get_bufwriter;
 use bio_utils_rs::nucleotide::PHRED_OFFSET;
 use rand::{prelude::*, random_range, rng};
