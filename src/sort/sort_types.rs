@@ -1,4 +1,4 @@
-use crate::common::{PHRED_TO_ERROR, gc_content, mean_error_and_phred};
+use bio_utils_rs::nucleotide::{PHRED_TO_ERROR, gc_content, mean_error_and_phred};
 use minimizer_iter::MinimizerBuilder;
 
 #[inline]

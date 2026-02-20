@@ -6,7 +6,7 @@ Fastq cli toolkit, inspired by [seqkit](https://github.com/shenwei356/seqkit/).
 - Rust >= 1.90.0
 
 ## Install
-The easiest way to get started is by installing a linux binary from [releases](https://github.com/OscarAspelin95/fastq_rs/releases).
+The easiest way to get started is to download a precompiled Linux binary from the latest [release](https://github.com/OscarAspelin95/fastq_rs/releases).
 
 ## Install from source
 Clone the repository or download the source code. Enter the fastq_rs directory and run:<br>

@@ -3,9 +3,23 @@ use log::error;
 use rayon::ThreadPoolBuilder;
 use simple_logger::SimpleLogger;
 
-use fastq_rs::args::App;
-
+mod args;
+mod concat;
 mod dispatch;
+mod errors;
+mod filter;
+mod fq2fa;
+mod fq2tab;
+mod grep;
+mod head;
+mod mock;
+mod sample;
+mod sanitize;
+mod sort;
+mod stats;
+mod trim;
+
+use args::App;
 use dispatch::dispatch;
 
 fn main() {

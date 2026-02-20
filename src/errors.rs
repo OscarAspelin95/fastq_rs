@@ -1,51 +1,35 @@
-use std::{path::PathBuf, str::Utf8Error};
+use std::str::Utf8Error;
+
+use bio_utils_rs::errors::BioError;
 use thiserror::Error;
 
 #[derive(Debug, Error)]
 pub enum AppError {
-    #[error("PathBuf conversion error: {0}")]
-    PathBufConversionError(PathBuf),
-
     #[error("Invalid sampling factor: {0}")]
     InvalidSamplingError(f32),
 
-    #[error("File does not exist: {0}")]
-    FileDoesNotExistError(PathBuf),
-
-    #[error("Invalid file extension: {0}")]
-    InvalidFileExtension(PathBuf),
-
-    #[error("Failed to open file")]
-    FailedToOpenFileError(String),
-
-    #[error("Failed to parse file")]
-    FailedToParseFileError(String),
-
-    #[error("Serialization error")]
-    SerializationError(String),
-
     #[error("Regex parsing error")]
     RegexParsingError(String),
-
-    #[error("Regex capture error")]
-    RegexCaptureError(String),
 
     #[error("Utf8 encoding error")]
     Utf8EncodingError(String),
 
     #[error("Invalid argument")]
     InvalidArgumentError(String),
+
+    #[error(transparent)]
+    BioError(#[from] BioError),
 }
 
 impl From<std::io::Error> for AppError {
     fn from(err: std::io::Error) -> Self {
-        AppError::FailedToOpenFileError(err.to_string())
+        AppError::BioError(BioError::IoError(err))
     }
 }
 
 impl From<needletail::errors::ParseError> for AppError {
     fn from(err: needletail::errors::ParseError) -> Self {
-        AppError::FailedToParseFileError(err.to_string())
+        AppError::BioError(BioError::NeedletailParseError(err))
     }
 }
 

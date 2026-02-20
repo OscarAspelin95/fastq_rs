@@ -2,6 +2,7 @@
 
 
 format-lint-fix:
+	@cargo update
 	@cargo fmt --all
 	@cargo clippy --fix --all --allow-dirty
 
