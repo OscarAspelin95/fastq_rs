@@ -1,5 +1,5 @@
-use crate::common::{AppError, general_bufwriter, needletail_fastq_reader};
-use anyhow::Result;
+use crate::errors::AppError;
+use bio_utils_rs::io::{get_bufwriter, needletail_reader};
 use regex::Regex;
 use std::path::PathBuf;
 
@@ -8,8 +8,8 @@ pub fn fastq_grep(
     pattern: String,
     outfile: Option<PathBuf>,
 ) -> Result<(), AppError> {
-    let mut reader = needletail_fastq_reader(fastq)?;
-    let mut writer = general_bufwriter(outfile)?;
+    let mut reader = needletail_reader(fastq)?;
+    let mut writer = get_bufwriter(outfile)?;
 
     let pattern =
         Regex::new(pattern.as_str()).map_err(|err| AppError::RegexParsingError(err.to_string()))?;

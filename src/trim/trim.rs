@@ -1,6 +1,7 @@
-use crate::common::{AppError, bio_fastq_reader, general_bufwriter, reverse_complement};
-use anyhow::Result;
+use crate::errors::AppError;
 use bio::pattern_matching::myers::MyersBuilder;
+use bio_utils_rs::io::{bio_fastq_reader, get_bufwriter};
+use bio_utils_rs::nucleotide::reverse_complement;
 use rayon::prelude::*;
 use rstest::rstest;
 use std::path::PathBuf;
@@ -54,10 +55,10 @@ pub fn fastq_trim(
 ) -> Result<(), AppError> {
     // Fastq reader/writer.
     let reader = bio_fastq_reader(fastq)?;
-    let fastq_writer = Arc::new(Mutex::new(general_bufwriter(outfile)?));
+    let fastq_writer = Arc::new(Mutex::new(get_bufwriter(outfile)?));
 
     // Tsv writer (to file).
-    let tsv_writer = Arc::new(Mutex::new(general_bufwriter(Some(barcodes_tsv.clone()))?));
+    let tsv_writer = Arc::new(Mutex::new(get_bufwriter(Some(barcodes_tsv.clone()))?));
 
     // If not supplied, empty vec means no iterating.
     let barcodes_start: Vec<String> = barcodes_forward.unwrap_or_default();
@@ -183,7 +184,7 @@ pub fn fastq_trim(
             })();
 
             if write_read.is_err() {
-                panic!("Failed to write line: {}", write_read.unwrap_err());
+                panic!("Failed to write line: {:?}", write_read);
             }
         }
 
@@ -219,7 +220,7 @@ pub fn fastq_trim(
         })();
 
         if info_write.is_err() {
-            panic!("Failed to write line: {}", info_write.unwrap_err());
+            panic!("Failed to write line: {:?}", info_write);
         }
     });
 

@@ -1,7 +1,6 @@
-use crate::common::AppError;
-use crate::common::{bio_fastq_reader, bio_fastq_writer};
-use anyhow::Result;
+use crate::errors::AppError;
 use bio::io::fastq::Record;
+use bio_utils_rs::io::{bio_fastq_reader, bio_fastq_writer};
 use rand::{prelude::*, rng};
 use std::path::PathBuf;
 

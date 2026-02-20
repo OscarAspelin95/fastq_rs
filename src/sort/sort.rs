@@ -1,9 +1,8 @@
 use crate::args::SortType;
-use crate::common::{AppError, bio_fastq_reader, bio_fastq_writer};
+use crate::errors::AppError;
 use crate::sort::{GcContent, Minimizer, ReadError, ReadLength, Score};
-
-use anyhow::Result;
 use bio::io::fastq::Record;
+use bio_utils_rs::io::{bio_fastq_reader, bio_fastq_writer};
 use rayon::prelude::*;
 use std::cmp::Ordering;
 use std::path::PathBuf;

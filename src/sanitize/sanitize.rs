@@ -1,10 +1,10 @@
-use crate::common::{AppError, general_bufwriter, needletail_fastq_reader};
-use anyhow::Result;
+use crate::errors::AppError;
+use bio_utils_rs::io::{get_bufwriter, needletail_reader};
 use std::path::PathBuf;
 
 pub fn fastq_sanitize(fastq: Option<PathBuf>, outfile: Option<PathBuf>) -> Result<(), AppError> {
-    let mut reader = needletail_fastq_reader(fastq)?;
-    let mut writer = general_bufwriter(outfile)?;
+    let mut reader = needletail_reader(fastq)?;
+    let mut writer = get_bufwriter(outfile)?;
 
     while let Some(record) = reader.next() {
         match record {

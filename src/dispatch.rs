@@ -1,19 +1,18 @@
-use anyhow::Result;
-use fastq_rs::args::{App, SubCommand};
-use fastq_rs::common::AppError;
-use fastq_rs::concat::fastq_concat;
-use fastq_rs::filter::fastq_filter;
-use fastq_rs::fq2fa::fastq_fq2fa;
-use fastq_rs::fq2tab::fastq_fq2tab;
-use fastq_rs::grep::fastq_grep;
-use fastq_rs::head::fastq_head;
-use fastq_rs::mock::fastq_mock;
-use fastq_rs::renumber::fastq_renumber;
-use fastq_rs::sample::fastq_sample;
-use fastq_rs::sanitize::fastq_sanitize;
-use fastq_rs::sort::fastq_sort;
-use fastq_rs::stats::fastq_stats;
-use fastq_rs::trim::fastq_trim;
+use crate::args::{App, SubCommand};
+use crate::concat::fastq_concat;
+use crate::errors::AppError;
+use crate::filter::fastq_filter;
+use crate::fq2fa::fastq_fq2fa;
+use crate::fq2tab::fastq_fq2tab;
+use crate::grep::fastq_grep;
+use crate::head::fastq_head;
+use crate::mock::fastq_mock;
+use crate::renumber::fastq_renumber;
+use crate::sample::fastq_sample;
+use crate::sanitize::fastq_sanitize;
+use crate::sort::fastq_sort;
+use crate::stats::fastq_stats;
+use crate::trim::fastq_trim;
 
 pub fn dispatch(args: App) -> Result<(), AppError> {
     match args.command {

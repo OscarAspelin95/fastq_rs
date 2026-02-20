@@ -1,5 +1,6 @@
-use crate::common::{AppError, general_bufwriter, utils::PHRED_OFFSET};
-use anyhow::Result;
+use crate::errors::AppError;
+use bio_utils_rs::io::get_bufwriter;
+use bio_utils_rs::nucleotide::PHRED_OFFSET;
 use rand::{prelude::*, random_range, rng};
 use std::path::PathBuf;
 
@@ -62,7 +63,7 @@ pub fn fastq_mock(
     suffix_seq: Option<String>,
     outfile: Option<PathBuf>,
 ) -> Result<(), AppError> {
-    let mut writer = general_bufwriter(outfile)?;
+    let mut writer = get_bufwriter(outfile)?;
     let actual_phred = phred + PHRED_OFFSET as u8;
 
     validate_input_arguments(num_reads, min_len, max_len, phred)?;
